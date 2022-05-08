@@ -3,17 +3,31 @@ airbus-ship-detection
 
 ML Engineering project for airbus ship detection.
 
+Visit this Kaggle page for more info
+* https://www.kaggle.com/c/airbus-ship-detection
+
 ## Getting Started
+
+### Airbus Project
 
 There are two ways to experiment with the dataset:
 
 * Sign up Jupyter notebook account on Kaggle, add data "_Competition Data -> Air Bus Ship Detection Challenge_"
 * Download the 30gb dataset using Kaggle API https://github.com/Kaggle/kaggle-api
 
+### GCP guide
+
+* https://github.com/GoogleCloudPlatform/mlops-with-vertex-ai
+
 ## Sample notebook
 
 * https://www.kaggle.com/code/kmader/baseline-u-net-model-part-1
 * https://www.kaggle.com/code/kmader/from-trained-u-net-to-submission-part-2/notebook
+
+## Alternative Dataset
+
+* We can use trained model from the Airbus Kaggle challenge to do transfer learning on Sentinel-2 satellite (10-m resolution)
+* Sample data around Singapore can be found here on [EO Hub Browser](https://apps.sentinel-hub.com/eo-browser/?zoom=13&lat=1.24101&lng=103.82303&themeId=DEFAULT-THEME&visualizationUrl=https%3A%2F%2Fservices.sentinel-hub.com%2Fogc%2Fwms%2F42924c6c-257a-4d04-9b8e-36387513a99c&datasetId=S2L1C&fromTime=2020-05-25T00%3A00%3A00.000Z&toTime=2020-05-25T23%3A59%3A59.999Z&layerId=1_TRUE_COLOR) 
 
 Project Organization
 ------------
