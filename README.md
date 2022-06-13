@@ -8,6 +8,14 @@ Visit this Kaggle page for more info
 
 ## Getting Started
 
+Please read through this
+
+* https://cloud.google.com/vertex-ai/docs/tutorials/train-tensorflow-bigquery
+
+Experimental notebook is in `notebooks/airbus.ipynb`
+
+The old notebook that we tried to use TFX is in `notebooks/airbus_detection_old.ipynb`
+
 ### Airbus Project
 
 There are two ways to experiment with the dataset:
