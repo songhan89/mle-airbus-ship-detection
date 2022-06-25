@@ -5,22 +5,31 @@ steps:
   entrypoint: /bin/sh
   args:
   - -c
-  - 'pip install flask && python ./a-working/test_app.py -v'
+  - 'python ./a-working/test_app.py -v'
+
+# This step deletes the latest container image
+# - name: 'https://github.com/songhan89/mle-airbus-ship-detection/a-working'
+#   id: Remove
+#   args:
+#   - 'rmi'
+#   - '--force'
+#   - 'asia-east1-docker.pkg.dev/$PROJECT_ID/mle-airbus-detection-repository/mle-airbus-detection:$SHORT_SHA'
 
 # This step builds the container image.
-- name: 'gcr.io/cloud-builders/docker'
+- name: 'https://github.com/songhan89/mle-airbus-ship-detection/a-working'
   id: Build
   args:
   - 'build'
   - '-t'
-  - 'asia-east1-docker.pkg.dev/$PROJECT_ID/mle-airbus-detection-repository/mle-airbus-detection:$SHORT_SHA'
+  - 'asia-east1-docker.pkg.dev/$PROJECT_ID/mle-airbus-detection-repository/testing-app:$SHORT_SHA'
   - '.'
+  - '--no-cache'
 
 # This step pushes the image to Artifact Registry
 # The PROJECT_ID and SHORT_SHA variables are automatically
 # replaced by Cloud Build.
-- name: 'gcr.io/cloud-builders/docker'
+- name: 'https://github.com/songhan89/mle-airbus-ship-detection/a-working'
   id: Push
   args:
   - 'push'
-  - 'asia-east1-docker.pkg.dev/$PROJECT_ID/mle-airbus-detection-repository/mle-airbus-detection:$SHORT_SHA'
+  - 'asia-east1-docker.pkg.dev/$PROJECT_ID/mle-airbus-detection-repository/testing-app:$SHORT_SHA'
