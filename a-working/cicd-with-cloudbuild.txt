@@ -24,17 +24,17 @@ git config --global user.name "Gabriel Quek"
 gcloud source repos create working-app
 gcloud source repos create working-env
 
-#cd ~
-git clone https://github.com/GoogleCloudPlatform/gke-gitops-tutorial-cloudbuild \
-    hello-cloudbuild-app
+cd ~
+git clone https://github.com/songhan89/mle-airbus-ship-detection \
+    working-app
 
-cd ~/hello-cloudbuild-app
+cd ~/working-app
 PROJECT_ID=$(gcloud config get-value project)
 git remote add google \
-    "https://source.developers.google.com/p/${PROJECT_ID}/r/hello-cloudbuild-app"
+    "https://source.developers.google.com/p/${PROJECT_ID}/r/working-app"
 
 
 ## Creating a container image with Cloud Build
-cd https://github.com/
+cd https://github.com/songhan89/mle-airbus-ship-detection/a-working
 COMMIT_ID="$(git rev-parse --short=7 HEAD)"
-gcloud builds submit --tag="asia-east1-docker.pkg.dev/${PROJECT_ID}/mle-airbus-detection-repository/hello-cloudbuild:${COMMIT_ID}" .
+gcloud builds submit --tag="asia-east1-docker.pkg.dev/${PROJECT_ID}/mle-airbus-detection-repository/mle-airbus-detection:${COMMIT_ID}" .
