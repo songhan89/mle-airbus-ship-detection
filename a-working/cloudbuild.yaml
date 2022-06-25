@@ -5,7 +5,7 @@ steps:
   entrypoint: /bin/sh
   args:
   - -c
-  - 'python ./a-working/test_app.py -v'
+  - 'pip install -r requirements.txt && python ./a-working/test_app.py -v'
 
 # This step deletes the latest container image
 # - name: 'https://github.com/songhan89/mle-airbus-ship-detection/a-working'
@@ -23,7 +23,7 @@ steps:
   - '-t'
   - 'asia-east1-docker.pkg.dev/$PROJECT_ID/mle-airbus-detection-repository/testing-app:$SHORT_SHA'
   - '.'
-  - '--no-cache'
+#  - '--no-cache'
 
 # This step pushes the image to Artifact Registry
 # The PROJECT_ID and SHORT_SHA variables are automatically
