@@ -1,0 +1,36 @@
+### Commands to type into Cloud Shell
+
+
+## Setup
+
+# Sets project
+gcloud config set project mle-airbus-detection-smu
+
+# Creates artifact repository (already done)
+gcloud artifacts repositories create mle-airbus-detection-repository \
+  --repository-format=docker \
+  --location=asia-east1
+
+# Create GKE cluster to deploy application (to be done only when deploying, to save cost)
+gcloud container clusters create-auto hello-cloudbuild \
+    --region asia-east1
+
+# Git config
+git config --global user.email "quekhyg@gmail.com"
+git config --global user.name "Gabriel Quek"
+
+
+## Creating Git Repositories in Google Cloud (not relevant for this project since we are using GitHub)
+#gcloud source repos create hello-cloudbuild-app
+#gcloud source repos create hello-cloudbuild-env
+
+#cd ~
+#git clone https://github.com/GoogleCloudPlatform/gke-gitops-tutorial-cloudbuild \
+#    hello-cloudbuild-app
+
+#cd ~/hello-cloudbuild-app
+#PROJECT_ID=$(gcloud config get-value project)
+#git remote add google \
+#    "https://source.developers.google.com/p/${PROJECT_ID}/r/hello-cloudbuild-app"
+
+## Creating a container image with Cloud Build
