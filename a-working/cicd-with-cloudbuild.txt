@@ -21,16 +21,20 @@ git config --global user.name "Gabriel Quek"
 
 
 ## Creating Git Repositories in Google Cloud (not relevant for this project since we are using GitHub)
-#gcloud source repos create hello-cloudbuild-app
-#gcloud source repos create hello-cloudbuild-env
+gcloud source repos create working-app
+gcloud source repos create working-env
 
 #cd ~
-#git clone https://github.com/GoogleCloudPlatform/gke-gitops-tutorial-cloudbuild \
-#    hello-cloudbuild-app
+git clone https://github.com/GoogleCloudPlatform/gke-gitops-tutorial-cloudbuild \
+    hello-cloudbuild-app
 
-#cd ~/hello-cloudbuild-app
-#PROJECT_ID=$(gcloud config get-value project)
-#git remote add google \
-#    "https://source.developers.google.com/p/${PROJECT_ID}/r/hello-cloudbuild-app"
+cd ~/hello-cloudbuild-app
+PROJECT_ID=$(gcloud config get-value project)
+git remote add google \
+    "https://source.developers.google.com/p/${PROJECT_ID}/r/hello-cloudbuild-app"
+
 
 ## Creating a container image with Cloud Build
+cd https://github.com/
+COMMIT_ID="$(git rev-parse --short=7 HEAD)"
+gcloud builds submit --tag="asia-east1-docker.pkg.dev/${PROJECT_ID}/mle-airbus-detection-repository/hello-cloudbuild:${COMMIT_ID}" .
