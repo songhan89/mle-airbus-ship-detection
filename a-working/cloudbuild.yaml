@@ -16,7 +16,7 @@ steps:
 #   - 'asia-east1-docker.pkg.dev/$PROJECT_ID/mle-airbus-detection-repository/mle-airbus-detection:$SHORT_SHA'
 
 # This step builds the container image.
-- name: 'https://github.com/songhan89/mle-airbus-ship-detection/a-working'
+- name: 'gcr.io/cloud-builders/docker'
   id: Build
   args:
   - 'build'
@@ -28,7 +28,7 @@ steps:
 # This step pushes the image to Artifact Registry
 # The PROJECT_ID and SHORT_SHA variables are automatically
 # replaced by Cloud Build.
-- name: 'https://github.com/songhan89/mle-airbus-ship-detection/a-working'
+- name: 'gcr.io/cloud-builders/docker'
   id: Push
   args:
   - 'push'
