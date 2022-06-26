@@ -1,8 +1,8 @@
 FROM python:3.7-slim
 WORKDIR /app
-COPY ./a-working/requirements.txt requirements.txt
+COPY ./a-working/requirements.txt /app/requirements.txt
 COPY ./a-working/app.py /app/app.py
-RUN pip install -r requirements.txt
+RUN pip install -r app/requirements.txt
 ENTRYPOINT ["python"]
 CMD ["/app/app.py"]
 
