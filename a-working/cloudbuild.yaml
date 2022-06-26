@@ -1,19 +1,39 @@
 steps:
+# Installing Dependencies
+- name: 'python:3.7-slim'
+  id: Dependencies
+  entrypoint: pip
+  args:
+  - 'install
+  - '-r'
+  - 'a-working/requirements.txt'
+  - '-v'
+
+# import kfp
+# import kfp.dsl as dsl
+# from kfp.v2.dsl import (
+#     component,
+#     Input,
+#     Output,
+#     Dataset,
+#     Metrics,
+# )
+
 # Unit Test
 - name: 'python:3.7-slim'
   id: Test
-  entrypoint: /bin/sh
+  entrypoint: python
   args:
   - -c
-  - 'pip install -r a-working/requirements.txt && python ./a-working/unit_tests.py -v'
+  - 'python ./a-working/unit_tests.py -v'
 
-# Data Validation
-- name: 'python:3.7-slim'
-  id: Data Validation
-  entrypoint: /bin/sh
-  args:
-  - -c
-  - 'python ./a-working/data_validation.py -v'
+# # Data Validation
+# - name: 'python:3.7-slim'
+#   id: Data Validation
+#   entrypoint: /bin/sh
+#   args:
+#   - -c
+#   - 'python ./a-working/data_validation.py -v'
 
 # # Data Processing
 # - name: 'python:3.7-slim'
@@ -31,22 +51,22 @@ steps:
 #   - -c
 #   - 'python ./a-working/training_pipeline.py -v'
 
-# This step builds the container image and specifies where to read from and where to build it
-- name: 'gcr.io/cloud-builders/docker'
-  id: Build
-  args:
-  - 'build'
-  - '-t'
-  - 'asia-east1-docker.pkg.dev/$PROJECT_ID/mle-airbus-detection-repository/testing-app:$SHORT_SHA'
-  - '-f'
-  - 'a-working/Dockerfile'
-  - '.'
+# # This step builds the container image and specifies where to read from and where to build it
+# - name: 'gcr.io/cloud-builders/docker'
+#   id: Build
+#   args:
+#   - 'build'
+#   - '-t'
+#   - 'asia-east1-docker.pkg.dev/$PROJECT_ID/mle-airbus-detection-repository/testing-app:$SHORT_SHA'
+#   - '-f'
+#   - 'a-working/Dockerfile'
+#   - '.'
 
-# This step pushes the image to Artifact Registry
-# The PROJECT_ID and SHORT_SHA variables are automatically
-# replaced by Cloud Build.
-- name: 'gcr.io/cloud-builders/docker'
-  id: Push
-  args:
-  - 'push'
-  - 'asia-east1-docker.pkg.dev/$PROJECT_ID/mle-airbus-detection-repository/testing-app:$SHORT_SHA'
+# # This step pushes the image to Artifact Registry
+# # The PROJECT_ID and SHORT_SHA variables are automatically
+# # replaced by Cloud Build.
+# - name: 'gcr.io/cloud-builders/docker'
+#   id: Push
+#   args:
+#   - 'push'
+#   - 'asia-east1-docker.pkg.dev/$PROJECT_ID/mle-airbus-detection-repository/testing-app:$SHORT_SHA'
