@@ -1,3 +1,13 @@
+import kfp
+import kfp.dsl as dsl
+from kfp.v2.dsl import (
+    component,
+    Input,
+    Output,
+    Dataset,
+    Metrics,
+)
+
 @component(packages_to_install=["google-cloud-storage", "google-cloud-bigquery", "tensorflow", 
                                 "sklearn", "pandas", "scikit-image", "db-dtypes", "google-auth",
                                "fsspec", "pyarrow"],

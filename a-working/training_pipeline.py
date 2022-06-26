@@ -1,4 +1,13 @@
+import kfp
 import kfp.dsl as dsl
+from kfp.v2.dsl import (
+    component,
+    Input,
+    Output,
+    Dataset,
+    Metrics,
+)
+from kfp.v2 import compiler
 
 @dsl.pipeline(
     name="training-pipeline",
@@ -18,8 +27,6 @@ def training_pipeline(project_dict: dict = {
         import_file.output,
     )
 
-
-from kfp.v2 import compiler # noqa: F811
 
 compiler.Compiler().compile(pipeline_func=train_pipeline, package_path="training_pipeline.json")
 DISPLAY_NAME = "intro_" + TIMESTAMP
