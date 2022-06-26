@@ -37,7 +37,7 @@ steps:
   args:
   - 'build'
   - '-f'
-  - 'a-working/'
+  - 'a-working/Dockerfile'
   - '.'
 
 # This step builds the container image and specifies where to save it
