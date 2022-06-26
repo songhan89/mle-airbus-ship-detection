@@ -24,8 +24,8 @@ steps:
   id: Test
   entrypoint: python
   args:
-  - -c
-  - 'python ./a-working/unit_tests.py -v'
+  - 'a-working/unit_tests'
+  - '-v'
 
 # # Data Validation
 # - name: 'python:3.7-slim'
