@@ -36,8 +36,8 @@ steps:
   id: Build
   args:
   - 'build'
-#   - '-f'
-#   - '/bin/sh/a-working/Dockerfile'
+  - '-f'
+  - 'a-working/Dockerfile'
   - '-t'
   - 'asia-east1-docker.pkg.dev/$PROJECT_ID/mle-airbus-detection-repository/testing-app:$SHORT_SHA'
   - '.'
