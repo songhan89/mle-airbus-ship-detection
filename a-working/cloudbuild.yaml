@@ -39,7 +39,7 @@ steps:
   - '-t'
   - 'asia-east1-docker.pkg.dev/$PROJECT_ID/mle-airbus-detection-repository/testing-app:$SHORT_SHA'
   - '-f'
-  - 'a-working'
+  - 'a-working/Dockerfile'
   - '.'
 
 # # This step builds the container image and specifies where to save it
