@@ -1,19 +1,19 @@
-steps:
-# Unit Test
-- name: 'python:3.7-slim'
-  id: Test
-  entrypoint: /bin/sh
-  args:
-  - -c
-  - 'pip install -r a-working/requirements.txt && python ./a-working/unit_tests.py -v'
+# steps:
+# # Unit Test
+# - name: 'python:3.7-slim'
+#   id: Test
+#   entrypoint: /bin/sh
+#   args:
+#   - -c
+#   - 'pip install -r a-working/requirements.txt && python ./a-working/unit_tests.py -v'
 
-# Data Validation
-- name: 'python:3.7-slim'
-  id: Data Validation
-  entrypoint: /bin/sh
-  args:
-  - -c
-  - 'python ./a-working/data_validation.py -v'
+# # Data Validation
+# - name: 'python:3.7-slim'
+#   id: Data Validation
+#   entrypoint: /bin/sh
+#   args:
+#   - -c
+#   - 'python ./a-working/data_validation.py -v'
 
 # # Data Processing
 # - name: 'python:3.7-slim'
@@ -39,7 +39,7 @@ steps:
   - '-t'
   - 'asia-east1-docker.pkg.dev/$PROJECT_ID/mle-airbus-detection-repository/testing-app:$SHORT_SHA'
   - '-f'
-  - '/a-working'
+  - 'a-working'
   - '.'
 
 # # This step builds the container image and specifies where to save it
