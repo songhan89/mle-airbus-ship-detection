@@ -8,7 +8,7 @@ steps:
 # Unit Test
 - name: 'python:3.7-slim'
   id: Test
-  args: ['-c', './a-working/unit_tests.py -v']
+  args: ['-c', 'python a-working/unit_tests.py -v']
 
 # # Data Validation
 # - name: 'python:3.7-slim'
