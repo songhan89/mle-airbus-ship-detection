@@ -1,11 +1,11 @@
-# steps:
-# # Unit Test
-# - name: 'python:3.7-slim'
-#   id: Test
-#   entrypoint: /bin/sh
-#   args:
-#   - -c
-#   - 'pip install -r a-working/requirements.txt && python ./a-working/unit_tests.py -v'
+steps:
+# Unit Test
+- name: 'python:3.7-slim'
+  id: Test
+  entrypoint: /bin/sh
+  args:
+  - -c
+  - 'pip install -r a-working/requirements.txt && python ./a-working/unit_tests.py -v'
 
 # # Data Validation
 # - name: 'python:3.7-slim'
