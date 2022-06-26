@@ -23,13 +23,13 @@ steps:
 #   - -c
 #   - 'python ./a-working/data_processing.py -v'
 
-# # Model Training
+# # Training Pipeline
 # - name: 'python:3.7-slim'
-#   id: Model Training
+#   id: Training Pipeline
 #   entrypoint: /bin/sh
 #   args:
 #   - -c
-#   - 'python ./a-working/model_training.py -v'
+#   - 'python ./a-working/training_pipeline.py -v'
 
 # This step builds the container image and specifies where to read from and where to build it
 - name: 'gcr.io/cloud-builders/docker'
