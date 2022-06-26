@@ -24,7 +24,7 @@ steps:
   id: Test
   entrypoint: python
   args:
-  - './a-working/unit_tests'
+  - 'a-working/unit_tests.py'
   - '-v'
 
 # # Data Validation
