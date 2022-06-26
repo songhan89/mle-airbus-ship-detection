@@ -4,7 +4,7 @@ steps:
   id: Dependencies
   entrypoint: pip
   args:
-  - 'install
+  - 'install'
   - '-r'
   - 'a-working/requirements.txt'
   - '-v'
