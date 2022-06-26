@@ -1,5 +1,7 @@
 FROM python:3.7-slim
+RUN pwd
 WORKDIR /a-working
+RUN pwd
 COPY requirements.txt requirements.txt
 COPY app.py app.py
 RUN pip install -r requirements.txt
