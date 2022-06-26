@@ -5,7 +5,7 @@ steps:
   entrypoint: /bin/sh
   args:
   - -c
-  - 'pip install a-working/requirements.txt && python ./a-working/unit_tests.py -v'
+  - 'pip install -r a-working/requirements.txt && python ./a-working/unit_tests.py -v'
 
 # Data Validation
 - name: 'python:3.7-slim'
