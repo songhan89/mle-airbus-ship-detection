@@ -1,7 +1,7 @@
 import unittest
 from app import hello
 
-class TestHelloApp(unittest.TestCase):
+class UnitTestCase(unittest.TestCase):
 
     def test_hello(self):
         self.assertEqual(hello(), "Hello World!\n")
