@@ -7,6 +7,7 @@ from kfp.v2.dsl import (
     Dataset,
     Metrics,
 )
+from typing import NamedTuple
 
 @component(packages_to_install=["google-cloud-storage", "google-cloud-bigquery", "tensorflow", 
                                 "sklearn", "pandas", "scikit-image", "db-dtypes", "google-auth",
