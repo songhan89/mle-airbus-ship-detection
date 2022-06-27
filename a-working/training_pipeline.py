@@ -8,6 +8,7 @@ from kfp.v2.dsl import (
     Metrics,
 )
 from kfp.v2 import compiler
+from data_processing import *
 
 @dsl.pipeline(
     name="training-pipeline",

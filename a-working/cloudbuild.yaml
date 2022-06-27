@@ -11,29 +11,29 @@ steps:
 #   entrypoint: /bin/sh
 #   args: ['-c', 'pip install flask && python a-working/unit_tests.py -v']
 
-# Data Validation
-- name: 'python:3.7-slim'
-  id: Data Validation
-  entrypoint: /bin/sh
-  args:
-  - -c
-  - 'pip install kfp && python ./a-working/data_validation.py -v'
-
-# Data Processing
-- name: 'python:3.7-slim'
-  id: Data Processing
-  entrypoint: /bin/sh
-  args:
-  - -c
-  - 'pip install kfp && python ./a-working/data_processing.py -v'
-
-# # Training Pipeline
+# # Data Validation
 # - name: 'python:3.7-slim'
-#   id: Training Pipeline
+#   id: Data Validation
 #   entrypoint: /bin/sh
 #   args:
 #   - -c
-#   - 'python ./a-working/training_pipeline.py -v'
+#   - 'pip install kfp && python ./a-working/data_validation.py -v'
+
+# # Data Processing
+# - name: 'python:3.7-slim'
+#   id: Data Processing
+#   entrypoint: /bin/sh
+#   args:
+#   - -c
+#   - 'pip install kfp && python ./a-working/data_processing.py -v'
+
+# Training Pipeline
+- name: 'python:3.7-slim'
+  id: Training Pipeline
+  entrypoint: /bin/sh
+  args:
+  - -c
+  - 'pip install kfp && python ./a-working/training_pipeline.py -v'
 
 # # This step builds the container image and specifies where to read from and where to build it
 # - name: 'gcr.io/cloud-builders/docker'
