@@ -1,23 +1,23 @@
 steps:
-# Installing Dependencies
-- name: 'python:3.7-slim'
-  id: Dependencies
-  entrypoint: /bin/sh
-  args: ['-c', 'pip install -r a-working/requirements.txt -v']
-
-# Unit Test
-- name: 'python:3.7-slim'
-  id: Test
-  entrypoint: /bin/sh
-  args: ['-c', 'python a-working/unit_tests.py -v']
-
-# # Data Validation
+# # Installing Dependencies
 # - name: 'python:3.7-slim'
-#   id: Data Validation
+#   id: Dependencies
 #   entrypoint: /bin/sh
-#   args:
-#   - -c
-#   - 'python ./a-working/data_validation.py -v'
+#   args: ['-c', 'pip install -r a-working/requirements.txt -v']
+
+# # Unit Test
+# - name: 'python:3.7-slim'
+#   id: Test
+#   entrypoint: /bin/sh
+#   args: ['-c', 'pip install flask && python a-working/unit_tests.py -v']
+
+# Data Validation
+- name: 'python:3.7-slim'
+  id: Data Validation
+  entrypoint: /bin/sh
+  args:
+  - -c
+  - 'pip install kfp && python ./a-working/data_validation.py -v'
 
 # # Data Processing
 # - name: 'python:3.7-slim'
