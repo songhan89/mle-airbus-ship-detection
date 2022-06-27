@@ -19,13 +19,13 @@ steps:
   - -c
   - 'pip install kfp && python ./a-working/data_validation.py -v'
 
-# # Data Processing
-# - name: 'python:3.7-slim'
-#   id: Data Processing
+# Data Processing
+- name: 'python:3.7-slim'
+  id: Data Processing
 #   entrypoint: /bin/sh
-#   args:
-#   - -c
-#   - 'python ./a-working/data_processing.py -v'
+  args:
+  - -c
+  - 'pip install kfp && python ./a-working/data_processing.py -v'
 
 # # Training Pipeline
 # - name: 'python:3.7-slim'
