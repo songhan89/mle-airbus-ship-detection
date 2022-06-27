@@ -22,7 +22,7 @@ steps:
 # Data Processing
 - name: 'python:3.7-slim'
   id: Data Processing
-#   entrypoint: /bin/sh
+  entrypoint: /bin/sh
   args:
   - -c
   - 'pip install kfp && python ./a-working/data_processing.py -v'
