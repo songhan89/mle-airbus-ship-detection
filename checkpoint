@@ -1,0 +1,2 @@
+model_checkpoint_path: "seg_model_weights.best.ctph"
+all_model_checkpoint_paths: "seg_model_weights.best.ctph"
