@@ -22,6 +22,7 @@ parts/
 sdist/
 var/
 saved_models/
+notebooks/
 *.egg-info/
 .installed.cfg
 *.egg
