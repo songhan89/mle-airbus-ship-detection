@@ -1,0 +1,795 @@
+{
+  "pipelineSpec": {
+    "components": {
+      "comp-endpoint-create": {
+        "executorLabel": "exec-endpoint-create",
+        "inputDefinitions": {
+          "parameters": {
+            "description": {
+              "type": "STRING"
+            },
+            "display_name": {
+              "type": "STRING"
+            },
+            "encryption_spec_key_name": {
+              "type": "STRING"
+            },
+            "labels": {
+              "type": "STRING"
+            },
+            "location": {
+              "type": "STRING"
+            },
+            "network": {
+              "type": "STRING"
+            },
+            "project": {
+              "type": "STRING"
+            }
+          }
+        },
+        "outputDefinitions": {
+          "artifacts": {
+            "endpoint": {
+              "artifactType": {
+                "schemaTitle": "google.VertexEndpoint",
+                "schemaVersion": "0.0.1"
+              }
+            }
+          },
+          "parameters": {
+            "gcp_resources": {
+              "type": "STRING"
+            }
+          }
+        }
+      },
+      "comp-importer": {
+        "executorLabel": "exec-importer",
+        "inputDefinitions": {
+          "parameters": {
+            "uri": {
+              "type": "STRING"
+            }
+          }
+        },
+        "outputDefinitions": {
+          "artifacts": {
+            "artifact": {
+              "artifactType": {
+                "schemaTitle": "google.UnmanagedContainerModel",
+                "schemaVersion": "0.0.1"
+              }
+            }
+          }
+        }
+      },
+      "comp-model-deploy": {
+        "executorLabel": "exec-model-deploy",
+        "inputDefinitions": {
+          "artifacts": {
+            "endpoint": {
+              "artifactType": {
+                "schemaTitle": "google.VertexEndpoint",
+                "schemaVersion": "0.0.1"
+              }
+            },
+            "model": {
+              "artifactType": {
+                "schemaTitle": "google.VertexModel",
+                "schemaVersion": "0.0.1"
+              }
+            }
+          },
+          "parameters": {
+            "automatic_resources_max_replica_count": {
+              "type": "INT"
+            },
+            "automatic_resources_min_replica_count": {
+              "type": "INT"
+            },
+            "dedicated_resources_accelerator_count": {
+              "type": "INT"
+            },
+            "dedicated_resources_accelerator_type": {
+              "type": "STRING"
+            },
+            "dedicated_resources_machine_type": {
+              "type": "STRING"
+            },
+            "dedicated_resources_max_replica_count": {
+              "type": "INT"
+            },
+            "dedicated_resources_min_replica_count": {
+              "type": "INT"
+            },
+            "deployed_model_display_name": {
+              "type": "STRING"
+            },
+            "disable_container_logging": {
+              "type": "STRING"
+            },
+            "enable_access_logging": {
+              "type": "STRING"
+            },
+            "explanation_metadata": {
+              "type": "STRING"
+            },
+            "explanation_parameters": {
+              "type": "STRING"
+            },
+            "service_account": {
+              "type": "STRING"
+            },
+            "traffic_split": {
+              "type": "STRING"
+            }
+          }
+        },
+        "outputDefinitions": {
+          "parameters": {
+            "gcp_resources": {
+              "type": "STRING"
+            }
+          }
+        }
+      },
+      "comp-model-upload": {
+        "executorLabel": "exec-model-upload",
+        "inputDefinitions": {
+          "artifacts": {
+            "unmanaged_container_model": {
+              "artifactType": {
+                "schemaTitle": "google.UnmanagedContainerModel",
+                "schemaVersion": "0.0.1"
+              }
+            }
+          },
+          "parameters": {
+            "artifact_uri": {
+              "type": "STRING"
+            },
+            "description": {
+              "type": "STRING"
+            },
+            "display_name": {
+              "type": "STRING"
+            },
+            "encryption_spec_key_name": {
+              "type": "STRING"
+            },
+            "explanation_metadata": {
+              "type": "STRING"
+            },
+            "explanation_parameters": {
+              "type": "STRING"
+            },
+            "instance_schema_uri": {
+              "type": "STRING"
+            },
+            "labels": {
+              "type": "STRING"
+            },
+            "location": {
+              "type": "STRING"
+            },
+            "parameters_schema_uri": {
+              "type": "STRING"
+            },
+            "prediction_schema_uri": {
+              "type": "STRING"
+            },
+            "project": {
+              "type": "STRING"
+            },
+            "serving_container_args": {
+              "type": "STRING"
+            },
+            "serving_container_command": {
+              "type": "STRING"
+            },
+            "serving_container_environment_variables": {
+              "type": "STRING"
+            },
+            "serving_container_health_route": {
+              "type": "STRING"
+            },
+            "serving_container_image_uri": {
+              "type": "STRING"
+            },
+            "serving_container_ports": {
+              "type": "STRING"
+            },
+            "serving_container_predict_route": {
+              "type": "STRING"
+            }
+          }
+        },
+        "outputDefinitions": {
+          "artifacts": {
+            "model": {
+              "artifactType": {
+                "schemaTitle": "google.VertexModel",
+                "schemaVersion": "0.0.1"
+              }
+            }
+          },
+          "parameters": {
+            "gcp_resources": {
+              "type": "STRING"
+            }
+          }
+        }
+      },
+      "comp-test-deployment-component": {
+        "executorLabel": "exec-test-deployment-component",
+        "inputDefinitions": {
+          "artifacts": {
+            "endpoint": {
+              "artifactType": {
+                "schemaTitle": "system.Artifact",
+                "schemaVersion": "0.0.1"
+              }
+            }
+          },
+          "parameters": {
+            "project_dict": {
+              "type": "STRING"
+            }
+          }
+        }
+      }
+    },
+    "deploymentSpec": {
+      "executors": {
+        "exec-endpoint-create": {
+          "container": {
+            "args": [
+              "--type",
+              "CreateEndpoint",
+              "--payload",
+              "{\"display_name\": \"{{$.inputs.parameters['display_name']}}\", \"description\": \"{{$.inputs.parameters['description']}}\", \"labels\": {{$.inputs.parameters['labels']}}, \"encryption_spec\": {\"kms_key_name\":\"{{$.inputs.parameters['encryption_spec_key_name']}}\"}, \"network\": \"{{$.inputs.parameters['network']}}\"}",
+              "--project",
+              "{{$.inputs.parameters['project']}}",
+              "--location",
+              "{{$.inputs.parameters['location']}}",
+              "--gcp_resources",
+              "{{$.outputs.parameters['gcp_resources'].output_file}}",
+              "--executor_input",
+              "{{$}}"
+            ],
+            "command": [
+              "python3",
+              "-u",
+              "-m",
+              "google_cloud_pipeline_components.container.v1.gcp_launcher.launcher"
+            ],
+            "image": "gcr.io/ml-pipeline/google-cloud-pipeline-components:1.0.9"
+          }
+        },
+        "exec-importer": {
+          "importer": {
+            "artifactUri": {
+              "constantValue": {
+                "stringValue": "gs://mle_airbus_dataset/trained_model/segm_full_200_20220626-143859/"
+              }
+            },
+            "metadata": {
+              "containerSpec": {
+                "imageUri": "us-docker.pkg.dev/vertex-ai/prediction/tf2-cpu.2-8:latest"
+              }
+            },
+            "typeSchema": {
+              "schemaTitle": "google.UnmanagedContainerModel",
+              "schemaVersion": "0.0.1"
+            }
+          }
+        },
+        "exec-model-deploy": {
+          "container": {
+            "args": [
+              "--type",
+              "DeployModel",
+              "--payload",
+              "{\"endpoint\": \"{{$.inputs.artifacts['endpoint'].metadata['resourceName']}}\", \"traffic_split\": {{$.inputs.parameters['traffic_split']}}, \"deployed_model\": {\"model\": \"{{$.inputs.artifacts['model'].metadata['resourceName']}}\", \"dedicated_resources\": {\"machine_spec\": {\"machine_type\": \"{{$.inputs.parameters['dedicated_resources_machine_type']}}\", \"accelerator_type\": \"{{$.inputs.parameters['dedicated_resources_accelerator_type']}}\", \"accelerator_count\": {{$.inputs.parameters['dedicated_resources_accelerator_count']}}}, \"min_replica_count\": {{$.inputs.parameters['dedicated_resources_min_replica_count']}}, \"max_replica_count\": {{$.inputs.parameters['dedicated_resources_max_replica_count']}}}, \"automatic_resources\": {\"min_replica_count\": {{$.inputs.parameters['automatic_resources_min_replica_count']}}, \"max_replica_count\": {{$.inputs.parameters['automatic_resources_max_replica_count']}}}, \"service_account\": \"{{$.inputs.parameters['service_account']}}\", \"disable_container_logging\": {{$.inputs.parameters['disable_container_logging']}}, \"enable_access_logging\": {{$.inputs.parameters['enable_access_logging']}}, \"explanation_spec\": {\"parameters\": {{$.inputs.parameters['explanation_parameters']}}, \"metadata\": {{$.inputs.parameters['explanation_metadata']}}}}}",
+              "--project",
+              "",
+              "--location",
+              "",
+              "--gcp_resources",
+              "{{$.outputs.parameters['gcp_resources'].output_file}}"
+            ],
+            "command": [
+              "python3",
+              "-u",
+              "-m",
+              "google_cloud_pipeline_components.container.v1.gcp_launcher.launcher"
+            ],
+            "image": "gcr.io/ml-pipeline/google-cloud-pipeline-components:1.0.9"
+          }
+        },
+        "exec-model-upload": {
+          "container": {
+            "args": [
+              "--type",
+              "UploadModel",
+              "--payload",
+              "{\"display_name\": \"{{$.inputs.parameters['display_name']}}\", \"description\": \"{{$.inputs.parameters['description']}}\", \"predict_schemata\": {\"instance_schema_uri\": \"{{$.inputs.parameters['instance_schema_uri']}}\", \"parameters_schema_uri\": \"{{$.inputs.parameters['parameters_schema_uri']}}\", \"prediction_schema_uri\": \"{{$.inputs.parameters['prediction_schema_uri']}}\"}, \"container_spec\": {\"image_uri\": \"{{$.inputs.parameters['serving_container_image_uri']}}\", \"command\": {{$.inputs.parameters['serving_container_command']}}, \"args\": {{$.inputs.parameters['serving_container_args']}}, \"env\": {{$.inputs.parameters['serving_container_environment_variables']}}, \"ports\": {{$.inputs.parameters['serving_container_ports']}}, \"predict_route\": \"{{$.inputs.parameters['serving_container_predict_route']}}\", \"health_route\": \"{{$.inputs.parameters['serving_container_health_route']}}\"}, \"artifact_uri\": \"{{$.inputs.parameters['artifact_uri']}}\", \"explanation_spec\": {\"parameters\": {{$.inputs.parameters['explanation_parameters']}}, \"metadata\": {{$.inputs.parameters['explanation_metadata']}}}, \"encryption_spec\": {\"kms_key_name\":\"{{$.inputs.parameters['encryption_spec_key_name']}}\"}, \"labels\": {{$.inputs.parameters['labels']}}}",
+              "--project",
+              "{{$.inputs.parameters['project']}}",
+              "--location",
+              "{{$.inputs.parameters['location']}}",
+              "--gcp_resources",
+              "{{$.outputs.parameters['gcp_resources'].output_file}}",
+              "--executor_input",
+              "{{$}}"
+            ],
+            "command": [
+              "python3",
+              "-u",
+              "-m",
+              "google_cloud_pipeline_components.container.v1.gcp_launcher.launcher"
+            ],
+            "image": "gcr.io/ml-pipeline/google-cloud-pipeline-components:1.0.9"
+          }
+        },
+        "exec-test-deployment-component": {
+          "container": {
+            "args": [
+              "--executor_input",
+              "{{$}}",
+              "--function_to_execute",
+              "test_deployment_component"
+            ],
+            "command": [
+              "sh",
+              "-c",
+              "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet     --no-warn-script-location 'numpy' 'google-cloud-aiplatform' 'google-cloud-storage' 'kfp==1.8.12' && \"$0\" \"$@\"\n",
+              "sh",
+              "-ec",
+              "program_path=$(mktemp -d)\nprintf \"%s\" \"$0\" > \"$program_path/ephemeral_component.py\"\npython3 -m kfp.v2.components.executor_main                         --component_module_path                         \"$program_path/ephemeral_component.py\"                         \"$@\"\n",
+              "\nimport kfp\nfrom kfp.v2 import dsl\nfrom kfp.v2.dsl import *\nfrom typing import *\n\ndef test_deployment_component(\n    endpoint: Input[Artifact],\n    project_dict: dict\n    ):\n    import logging\n    import numpy as np\n    import matplotlib.pyplot as plt\n    import google.cloud.aiplatform as aip\n    from google.cloud import storage\n    from io import BytesIO\n    from PIL import Image   \n\n    PROJECT_ID = project_dict['PROJECT_ID']\n    REGION = project_dict['REGION']\n    GCS_BUCKET = project_dict['GCS_BUCKET']\n    aip.init(project=PROJECT_ID, location=REGION)\n    logging.info(endpoint.uri)\n    logging.info(endpoint.metadata)\n\n    client = storage.Client() # Implicit environment set up\n    bucket = client.get_bucket(GCS_BUCKET)\n    fname_list = ['00b846e38.jpg', '060ea266e.jpg', '0aa565354.jpg', '00ce2c1c0.jpg', '0a286fb15.jpg']\n    img_ori_list = []\n\n    for fname in fname_list:\n        blob = bucket.get_blob(f'train_v2/{fname}')\n        img_big = Image.open(BytesIO(blob.download_as_bytes()))\n        img_ori_list.append(img_big)\n\n    endpoint = aip.Endpoint(endpoint.uri.split(\"/\")[-1])\n\n    for idx, image in enumerate(img_ori_list):\n        img = image.resize((128, 128))\n        input_img = (np.array(img.getdata())/255.0).reshape(128, 128, 3).tolist()\n        prediction = endpoint.predict(instances=[input_img])\n        result = np.array(prediction.predictions)[0]\n\n    logging.info(\"Model deployment unit testing passed!\")\n\n"
+            ],
+            "image": "python:3.7"
+          }
+        }
+      }
+    },
+    "pipelineInfo": {
+      "name": "airbus-mle"
+    },
+    "root": {
+      "dag": {
+        "tasks": {
+          "endpoint-create": {
+            "cachingOptions": {
+              "enableCache": true
+            },
+            "componentRef": {
+              "name": "comp-endpoint-create"
+            },
+            "inputs": {
+              "parameters": {
+                "description": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "display_name": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "airbus-mle-endpoint"
+                    }
+                  }
+                },
+                "encryption_spec_key_name": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "labels": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "{}"
+                    }
+                  }
+                },
+                "location": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "asia-east1"
+                    }
+                  }
+                },
+                "network": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "project": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "mle-airbus-detection-smu"
+                    }
+                  }
+                }
+              }
+            },
+            "taskInfo": {
+              "name": "Create end point for deployment"
+            }
+          },
+          "importer": {
+            "cachingOptions": {
+              "enableCache": true
+            },
+            "componentRef": {
+              "name": "comp-importer"
+            },
+            "inputs": {
+              "parameters": {
+                "uri": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "gs://mle_airbus_dataset/trained_model/segm_full_200_20220626-143859/"
+                    }
+                  }
+                }
+              }
+            },
+            "taskInfo": {
+              "name": "Import trained model image"
+            }
+          },
+          "model-deploy": {
+            "cachingOptions": {
+              "enableCache": true
+            },
+            "componentRef": {
+              "name": "comp-model-deploy"
+            },
+            "dependentTasks": [
+              "endpoint-create",
+              "model-upload"
+            ],
+            "inputs": {
+              "artifacts": {
+                "endpoint": {
+                  "taskOutputArtifact": {
+                    "outputArtifactKey": "endpoint",
+                    "producerTask": "endpoint-create"
+                  }
+                },
+                "model": {
+                  "taskOutputArtifact": {
+                    "outputArtifactKey": "model",
+                    "producerTask": "model-upload"
+                  }
+                }
+              },
+              "parameters": {
+                "automatic_resources_max_replica_count": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "intValue": "0"
+                    }
+                  }
+                },
+                "automatic_resources_min_replica_count": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "intValue": "0"
+                    }
+                  }
+                },
+                "dedicated_resources_accelerator_count": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "intValue": "1"
+                    }
+                  }
+                },
+                "dedicated_resources_accelerator_type": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "NVIDIA_TESLA_K80"
+                    }
+                  }
+                },
+                "dedicated_resources_machine_type": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "n1-standard-4"
+                    }
+                  }
+                },
+                "dedicated_resources_max_replica_count": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "intValue": "1"
+                    }
+                  }
+                },
+                "dedicated_resources_min_replica_count": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "intValue": "1"
+                    }
+                  }
+                },
+                "deployed_model_display_name": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "airbus-mle-deploy"
+                    }
+                  }
+                },
+                "disable_container_logging": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "intValue": "0"
+                    }
+                  }
+                },
+                "enable_access_logging": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "intValue": "0"
+                    }
+                  }
+                },
+                "explanation_metadata": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "{}"
+                    }
+                  }
+                },
+                "explanation_parameters": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "{}"
+                    }
+                  }
+                },
+                "service_account": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "traffic_split": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "{\"0\": 100}"
+                    }
+                  }
+                }
+              }
+            },
+            "taskInfo": {
+              "name": "Model deployment and serving"
+            }
+          },
+          "model-upload": {
+            "cachingOptions": {
+              "enableCache": true
+            },
+            "componentRef": {
+              "name": "comp-model-upload"
+            },
+            "dependentTasks": [
+              "importer"
+            ],
+            "inputs": {
+              "artifacts": {
+                "unmanaged_container_model": {
+                  "taskOutputArtifact": {
+                    "outputArtifactKey": "artifact",
+                    "producerTask": "importer"
+                  }
+                }
+              },
+              "parameters": {
+                "artifact_uri": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "description": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "display_name": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "airbus-ship-dataset-display-classifier-v01"
+                    }
+                  }
+                },
+                "encryption_spec_key_name": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "explanation_metadata": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "{}"
+                    }
+                  }
+                },
+                "explanation_parameters": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "{}"
+                    }
+                  }
+                },
+                "instance_schema_uri": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "labels": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "{}"
+                    }
+                  }
+                },
+                "location": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "asia-east1"
+                    }
+                  }
+                },
+                "parameters_schema_uri": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "prediction_schema_uri": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "project": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "mle-airbus-detection-smu"
+                    }
+                  }
+                },
+                "serving_container_args": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "[]"
+                    }
+                  }
+                },
+                "serving_container_command": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "[]"
+                    }
+                  }
+                },
+                "serving_container_environment_variables": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "[]"
+                    }
+                  }
+                },
+                "serving_container_health_route": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "serving_container_image_uri": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "serving_container_ports": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "[]"
+                    }
+                  }
+                },
+                "serving_container_predict_route": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                }
+              }
+            },
+            "taskInfo": {
+              "name": "Model upload"
+            }
+          },
+          "test-deployment-component": {
+            "cachingOptions": {
+              "enableCache": true
+            },
+            "componentRef": {
+              "name": "comp-test-deployment-component"
+            },
+            "dependentTasks": [
+              "endpoint-create",
+              "model-deploy"
+            ],
+            "inputs": {
+              "artifacts": {
+                "endpoint": {
+                  "taskOutputArtifact": {
+                    "outputArtifactKey": "endpoint",
+                    "producerTask": "endpoint-create"
+                  }
+                }
+              },
+              "parameters": {
+                "project_dict": {
+                  "componentInputParameter": "project_dict"
+                }
+              }
+            },
+            "taskInfo": {
+              "name": "Test model deployment"
+            }
+          }
+        }
+      },
+      "inputDefinitions": {
+        "parameters": {
+          "gcs_bucket": {
+            "type": "STRING"
+          },
+          "metrics_thresholds": {
+            "type": "STRING"
+          },
+          "model_output_folder": {
+            "type": "STRING"
+          },
+          "project_dict": {
+            "type": "STRING"
+          }
+        }
+      }
+    },
+    "schemaVersion": "2.0.0",
+    "sdkVersion": "kfp-1.8.12"
+  },
+  "runtimeConfig": {
+    "gcsOutputDirectory": "gs://mle_airbus_dataset/airbusmlepipeline/pipeline_root"
+  }
+}
