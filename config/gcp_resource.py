@@ -16,6 +16,7 @@ MODEL_DEPLOY_DISPLAY_NAME="airbus-mle-deploy"
 TABLE_BQ="mle-airbus-detection-smu.airbus_data.label_data"
 
 TRAIN_IMAGE = "asia-docker.pkg.dev/vertex-ai/training/tf-gpu.2-8:latest"
+#not sure why deploy image does not work if use asia-docker.pkg.dev
 DEPLOY_IMAGE = "us-docker.pkg.dev/vertex-ai/prediction/tf2-cpu.2-8:latest"
 
 project_dict = {}
