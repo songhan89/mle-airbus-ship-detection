@@ -63,7 +63,7 @@ Stringing together of the pipeline, alongside test components that ensures every
 This notebook provides a demo of calling RESTful api from Endpoint which returns a model prediction result given an input image.
 
 ### Overall Pipeline (deployed on Vertex AI)
-![Vertex AI Pipeline](./reports/figures/pipeline.jpg)
+![Vertex AI Pipeline](./reports/figures/pipeline.jpeg)
 
 ## Project Organization
 ------------
