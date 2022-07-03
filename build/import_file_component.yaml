@@ -1,0 +1,129 @@
+name: Import file component
+inputs:
+- {name: project_dict, type: JsonObject}
+outputs:
+- {name: train_data_fpath, type: String}
+- {name: test_data_fpath, type: String}
+implementation:
+  container:
+    image: python:3.7
+    command:
+    - sh
+    - -c
+    - |2
+
+      if ! [ -x "$(command -v pip)" ]; then
+          python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip
+      fi
+
+      PIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet     --no-warn-script-location 'google-cloud-storage' 'google-cloud-bigquery' 'tensorflow' 'sklearn' 'pandas' 'scikit-image' 'db-dtypes' 'google-auth' 'fsspec' 'pyarrow' 'kfp==1.8.12' && "$0" "$@"
+    - sh
+    - -ec
+    - |
+      program_path=$(mktemp -d)
+      printf "%s" "$0" > "$program_path/ephemeral_component.py"
+      python3 -m kfp.v2.components.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+    - "\nimport kfp\nfrom kfp.v2 import dsl\nfrom kfp.v2.dsl import *\nfrom typing\
+      \ import *\n\ndef import_file_component(\n    project_dict: dict\n    ) -> NamedTuple(\n\
+      \    \"Outputs\",\n    [\n        (\"train_data_fpath\", str),  # Return parameter.\n\
+      \        (\"test_data_fpath\", str),  # Return generic Artifact.\n    ],\n \
+      \   ):\n\n    import requests\n    import os\n    import logging\n    from sklearn.utils\
+      \ import resample\n    from google.cloud import bigquery, storage\n    import\
+      \ pandas as pd\n    import numpy as np\n    import tensorflow as tf\n    from\
+      \ google.oauth2 import service_account\n    from skimage.segmentation import\
+      \ mark_boundaries\n    from skimage.util import montage as montage2d\n    from\
+      \ skimage.io import imread\n    from skimage.segmentation import mark_boundaries\n\
+      \    from skimage.util import montage\n    from skimage.morphology import label\n\
+      \n    #TODO: How to improve these functions ?\n    def rle_decode_tf(mask_rle,\
+      \ shape=(768, 768)):\n\n        shape = tf.convert_to_tensor(shape, tf.int64)\n\
+      \        size = tf.math.reduce_prod(shape)\n        # Split string\n       \
+      \ s = tf.strings.split(mask_rle)\n        s = tf.strings.to_number(s, tf.int64)\n\
+      \        # Get starts and lengths\n        starts = s[::2] - 1\n        lens\
+      \ = s[1::2]\n        # Make ones to be scattered\n        total_ones = tf.reduce_sum(lens)\n\
+      \        ones = tf.ones([total_ones], tf.uint8)\n        # Make scattering indices\n\
+      \        r = tf.range(total_ones)\n        lens_cum = tf.math.cumsum(lens)\n\
+      \        s = tf.searchsorted(lens_cum, r, 'right')\n        idx = r + tf.gather(starts\
+      \ - tf.pad(lens_cum[:-1], [(1, 0)]), s)\n        # Scatter ones into flattened\
+      \ mask\n        mask_flat = tf.scatter_nd(tf.expand_dims(idx, 1), ones, [size])\n\
+      \        return tf.expand_dims(tf.transpose(tf.reshape(mask_flat, shape)), axis=2)\n\
+      \n    def multi_rle_encode(img):\n        labels = label(img[:, :, 0])\n   \
+      \     return [rle_encode(labels==k) for k in np.unique(labels[labels>0])]\n\n\
+      \    # ref: https://www.kaggle.com/paulorzp/run-length-encode-and-decode\n \
+      \   def rle_encode(img):\n        '''\n        img: numpy array, 1 - mask, 0\
+      \ - background\n        Returns run length as string formated\n        '''\n\
+      \        pixels = img.T.flatten()\n        pixels = np.concatenate([[0], pixels,\
+      \ [0]])\n        runs = np.where(pixels[1:] != pixels[:-1])[0] + 1\n       \
+      \ runs[1::2] -= runs[::2]\n        return ' '.join(str(x) for x in runs)\n\n\
+      \    def rle_decode(mask_rle, shape=(768, 768)):\n        '''\n        mask_rle:\
+      \ run-length as string formated (start length)\n        shape: (height,width)\
+      \ of array to return \n        Returns numpy array, 1 - mask, 0 - background\n\
+      \        '''\n        s = mask_rle.split()\n        starts, lengths = [np.asarray(x,\
+      \ dtype=int) for x in (s[0:][::2], s[1:][::2])]\n        starts -= 1\n     \
+      \   ends = starts + lengths\n        img = np.zeros(shape[0]*shape[1], dtype=np.uint8)\n\
+      \        for lo, hi in zip(starts, ends):\n            img[lo:hi] = 1\n    \
+      \    return img.reshape(shape).T   # Needed to align to RLE direction\n\n  \
+      \  def masks_as_image(in_mask_list):\n        #in_mask_list = tf.compat.as_str_any(in_mask_list)\n\
+      \        # Take the individual ship masks and create a single mask array for\
+      \ all ships\n        all_masks = np.zeros((768, 768), dtype = np.int16)\n  \
+      \      #if isinstance(in_mask_list, list):\n        for mask in in_mask_list:\n\
+      \            if isinstance(mask, str):\n                all_masks += rle_decode(mask)\n\
+      \        return np.expand_dims(all_masks, -1)\n\n    def merge_rle_encode(mask_rle,\
+      \ shape=(768, 768)):\n        img = np.zeros(shape=shape, dtype=np.uint8)\n\n\
+      \        for rle in mask_rle.split(\";\"):\n            img += rle_decode(rle)\n\
+      \n        return rle_encode(img)\n\n    def parse_db_to_img(filename, label):\n\
+      \        file_path = filename\n        img = tf.io.read_file(file_path)\n  \
+      \      image = tf.image.decode_jpeg(img, channels=3)\n        label_img = rle_decode_tf(label)\n\
+      \n        return image, label_img\n\n    BATCH_SIZE = 16\n    EDGE_CROP = 16\n\
+      \    NB_EPOCHS = 10\n    GAUSSIAN_NOISE = 0.1\n    UPSAMPLE_MODE = 'SIMPLE'\n\
+      \    # downsampling inside the network\n    NET_SCALING = None\n    # downsampling\
+      \ in preprocessing\n    IMG_SCALING = (1, 1)\n    # number of validation images\
+      \ to use\n    VALID_IMG_COUNT = 10\n    # maximum number of steps_per_epoch\
+      \ in training\n    MAX_TRAIN_STEPS = 200\n    AUGMENT_BRIGHTNESS = False\n \
+      \   N_SAMPLE = 100\n    IMG_SHAPE = (128, 128)\n\n    PROJECT_ID = project_dict['PROJECT_ID']\n\
+      \    GCS_BUCKET = project_dict['GCS_BUCKET']\n    REGION = project_dict['REGION']\n\
+      \    TABLE_BQ = project_dict['TABLE_BQ']\n\n    bucket = storage.Client().bucket(GCS_BUCKET)\n\
+      \n\n    try: \n        bqclient = bigquery.Client(project=PROJECT_ID, location=REGION)\n\
+      \        logging.info(\"No authentication required!\")\n    except:\n      \
+      \  logging.info(\"Try a hacky way\")\n        blob = bucket.blob(\"mle-airbus-detection-smu-b1f8ee58e814.json\"\
+      )\n        blob.download_to_filename(\"mle-airbus-detection-smu-b1f8ee58e814.json\"\
+      )\n        credentials = service_account.Credentials.from_service_account_file(\n\
+      \            \"mle-airbus-detection-smu-b1f8ee58e814.json\", scopes=[\"https://www.googleapis.com/auth/cloud-platform\"\
+      ],\n        )\n\n        bqclient = bigquery.Client(credentials=credentials,\
+      \ project=PROJECT_ID, location=REGION)\n        logging.info(\"Authenticated!\"\
+      )\n\n    # Download a table.\n    table = bigquery.TableReference.from_string(\n\
+      \        #TODO: replace with param\n        \"mle-airbus-detection-smu.airbus_data.label_data\"\
+      \n    )\n    rows = bqclient.list_rows(\n        table\n    )\n    masks = rows.to_dataframe(\n\
+      \        # Optionally, explicitly request to use the BigQuery Storage API. As\
+      \ of\n        # google-cloud-bigquery version 1.26.0 and above, the BigQuery\
+      \ Storage\n        # API is used by default.\n        create_bqstorage_client=True,\n\
+      \    )\n\n    #TODO: parame\n    masks = masks[:20000]\n    masks.replace(to_replace=[None],\
+      \ value='', inplace=True)\n    masks = masks.groupby(['ImageId'])['EncodedPixels'].apply(lambda\
+      \ x: ';'.join(x) if x is not None else ';'.join('')).reset_index()\n\n    masks['ships']\
+      \ = masks['EncodedPixels'].map(lambda c_row: c_row.count(\";\"))\n    unique_img_ids\
+      \ = masks.groupby('ImageId').agg({'ships': 'sum'}).reset_index()\n    unique_img_ids['has_ship']\
+      \ = unique_img_ids['ships'].map(lambda x: 1.0 if x>0 else 0.0)\n    unique_img_ids['has_ship_vec']\
+      \ = unique_img_ids['has_ship'].map(lambda x: [x])\n    masks.drop(['ships'],\
+      \ axis=1, inplace=True)\n    unique_img_ids.sample(5)\n    masks.EncodedPixels\
+      \ = masks.EncodedPixels.apply(lambda x: merge_rle_encode(x))\n\n    from sklearn.model_selection\
+      \ import train_test_split\n    train_ids, valid_ids = train_test_split(unique_img_ids,\
+      \ \n                     test_size = 0.3, \n                     stratify =\
+      \ unique_img_ids['ships'])\n    train_df = pd.merge(masks, train_ids)\n    valid_df\
+      \ = pd.merge(masks, valid_ids)\n    print(train_df.shape[0], 'training masks')\n\
+      \    print(valid_df.shape[0], 'validation masks')\n\n    train_df_balanced =\
+      \ pd.DataFrame()\n    for ship_num in train_df['ships'].unique():\n        train_df_balanced\
+      \ = train_df_balanced.append(resample(train_df.query(\"ships == {}\".format(ship_num)),\
+      \ n_samples=N_SAMPLE))\n    train_df_balanced.reset_index(drop=True, inplace=True)\n\
+      \n    valid_df_balanced = pd.DataFrame()\n    for ship_num in valid_df['ships'].unique():\n\
+      \        valid_df_balanced = valid_df_balanced.append(resample(valid_df.query(\"\
+      ships == {}\".format(ship_num)), n_samples=N_SAMPLE//10))\n\n    #TODO: make\
+      \ this nicer , don't hard code\n    train_df_balanced.to_parquet(f\"train.parquet\"\
+      )\n    valid_df_balanced.to_parquet(f\"test.parquet\")\n\n    blob = bucket.blob('train.parquet')\n\
+      \    blob.upload_from_filename('train.parquet')\n    blob = bucket.blob('test.parquet')\n\
+      \    blob.upload_from_filename('test.parquet')\n\n    #return f\"gs://{GCS_BUCKET}/train.parquet\"\
+      , f\"gs://{GCS_BUCKET}/test.parquet\"\n    return f\"gs://{GCS_BUCKET}/train.parquet\"\
+      , f\"gs://{GCS_BUCKET}/test.parquet\"\n\n"
+    args:
+    - --executor_input
+    - {executorInput: null}
+    - --function_to_execute
+    - import_file_component

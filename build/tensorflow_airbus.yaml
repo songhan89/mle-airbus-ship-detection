@@ -1,0 +1,27 @@
+name: Tensorflow Airbus Model Training
+description: Train a tf model and save to GCS
+inputs:
+  - name: model_dir
+    description: 'Path to save model.'
+    type: String
+  - name: train_data_dir
+    description: 'Training dataset directory.'
+    type: String
+  - name: eval_data_dir
+    description: 'Evaluation dataset directory.'
+    type: String
+    
+outputs:
+  - name: gcs_model_path
+    description: 'Trained model path.'
+    type: String
+implementation:
+    container:
+        image: asia-east1-docker.pkg.dev/mle-airbus-detection-smu/airbus-mle/trainer-airbus-model-ey:latest
+        command: [
+          python, ./src/model_training/task.py,
+          --model-dir, {inputValue: model_dir},
+          --train-data-dir, {inputValue: train_data_dir},
+          --eval-data-dir, {inputValue: eval_data_dir},
+          --out-model, {outputPath: gcs_model_path}
+        ]
