@@ -1,0 +1,87 @@
+name: Check image component
+inputs:
+- {name: project_dict, type: JsonObject}
+- {name: img_to_check}
+implementation:
+  container:
+    image: python:3.9
+    command:
+    - sh
+    - -c
+    - |2
+
+      if ! [ -x "$(command -v pip)" ]; then
+          python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip
+      fi
+
+      PIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet     --no-warn-script-location 'google-cloud-storage' 'opencv-python-headless' 'pandas' 'pyarrow' 'fsspec' 'gcsfs' 'kfp==1.8.12' && "$0" "$@"
+    - sh
+    - -ec
+    - |
+      program_path=$(mktemp -d)
+      printf "%s" "$0" > "$program_path/ephemeral_component.py"
+      python3 -m kfp.v2.components.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+    - |2+
+
+      import kfp
+      from kfp.v2 import dsl
+      from kfp.v2.dsl import *
+      from typing import *
+
+      def check_image_component(
+          project_dict: dict,
+          img_to_check # images to be passed as a np.ndarray
+          ):
+          import cv2
+          import urllib
+          import numpy as np
+          import pandas as pd
+          import gcsfs
+          import logging
+
+          logging.basicConfig(level=logging.INFO)
+
+          PROJECT_ID = project_dict['PROJECT_ID']
+          GCS_BUCKET = project_dict['GCS_BUCKET']
+
+          #load the training data histogram
+          fs = gcsfs.GCSFileSystem(project=f'{PROJECT_ID}')
+          with fs.open(f'gs://{GCS_BUCKET}/train_hist.csv') as f:
+              loadedHist = np.loadtxt(f,dtype='float32')
+
+          # This loadedArr is a 2D array, therefore we need to convert it to the original array shape.
+          # reshaping to get original matrice with original shape.
+          loadedHist = loadedHist.reshape(loadedHist.shape[0], loadedHist.shape[1] // loadedHist.shape[0], loadedHist.shape[0]).astype('float32')
+
+          channels = [0, 1, 2]
+          hist_size = [256] * 3
+          hist_ranges = [0, 256] * 3
+
+          # compute the image histograms for served image
+          image_hist = cv2.calcHist(image_to_check,
+                                    channels,
+                                    None,
+                                    hist_size,
+                                    hist_ranges,
+                                    accumulate = True)
+          cv2.normalize(image_hist, image_hist, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX)
+
+          # compute the comparison
+          corr = cv2.compareHist(loadedHist, image_hist, 0)
+          batt = cv2.compareHist(loadedHist, image_hist, 3)
+
+          #load the threshold for comparison
+          fs = gcsfs.GCSFileSystem(project=f'{PROJECT_ID}')
+          with fs.open(f'gs://{GCS_BUCKET}/train_threshold.txt') as f:
+              thresholds = np.loadtxt(f,dtype='float32')
+
+          if corr <= thresholds[0] and batt <= thresholds[1]:
+              logging.info('New data is within threshold for data drift.')
+          else:
+              logging.info(f'Train serve data drift detected. Correlation is {corr} and Battacharyya distance is {batt}, compared with {thresholds[0]} and {thresholds[1]} for training vs test data.')
+
+    args:
+    - --executor_input
+    - {executorInput: null}
+    - --function_to_execute
+    - check_image_component
