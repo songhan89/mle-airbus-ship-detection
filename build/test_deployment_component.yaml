@@ -1,0 +1,46 @@
+name: Test deployment component
+inputs:
+- {name: endpoint, type: Artifact}
+- {name: project_dict, type: JsonObject}
+implementation:
+  container:
+    image: python:3.7
+    command:
+    - sh
+    - -c
+    - |2
+
+      if ! [ -x "$(command -v pip)" ]; then
+          python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip
+      fi
+
+      PIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet     --no-warn-script-location 'numpy' 'google-cloud-aiplatform' 'google-cloud-storage' 'Pillow' 'kfp==1.8.12' && "$0" "$@"
+    - sh
+    - -ec
+    - |
+      program_path=$(mktemp -d)
+      printf "%s" "$0" > "$program_path/ephemeral_component.py"
+      python3 -m kfp.v2.components.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+    - "\nimport kfp\nfrom kfp.v2 import dsl\nfrom kfp.v2.dsl import *\nfrom typing\
+      \ import *\n\ndef test_deployment_component(\n    endpoint: Input[Artifact],\n\
+      \    project_dict: dict\n    ):\n    import logging\n    import numpy as np\n\
+      \    import google.cloud.aiplatform as aip\n    from google.cloud import storage\n\
+      \    from io import BytesIO\n    from PIL import Image   \n\n    PROJECT_ID\
+      \ = project_dict['PROJECT_ID']\n    REGION = project_dict['REGION']\n    GCS_BUCKET\
+      \ = project_dict['GCS_BUCKET']\n    aip.init(project=PROJECT_ID, location=REGION)\n\
+      \    logging.info(endpoint.uri)\n    logging.info(endpoint.metadata)\n\n   \
+      \ client = storage.Client() # Implicit environment set up\n    bucket = client.get_bucket(GCS_BUCKET)\n\
+      \    fname_list = ['00b846e38.jpg', '060ea266e.jpg', '0aa565354.jpg', '00ce2c1c0.jpg',\
+      \ '0a286fb15.jpg']\n    img_ori_list = []\n\n    for fname in fname_list:\n\
+      \        blob = bucket.get_blob(f'train_v2/{fname}')\n        img_big = Image.open(BytesIO(blob.download_as_bytes()))\n\
+      \        img_ori_list.append(img_big)\n\n    endpoint = aip.Endpoint(endpoint.uri.split(\"\
+      /\")[-1])\n\n    for idx, image in enumerate(img_ori_list):\n        img = image.resize((128,\
+      \ 128))\n        input_img = (np.array(img.getdata())/255.0).reshape(128, 128,\
+      \ 3).tolist()\n        prediction = endpoint.predict(instances=[input_img])\n\
+      \        result = np.array(prediction.predictions)[0]\n\n    logging.info(\"\
+      Model deployment unit testing passed!\")\n\n"
+    args:
+    - --executor_input
+    - {executorInput: null}
+    - --function_to_execute
+    - test_deployment_component

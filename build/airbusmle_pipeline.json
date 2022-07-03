@@ -1,0 +1,1145 @@
+{
+  "pipelineSpec": {
+    "components": {
+      "comp-endpoint-create": {
+        "executorLabel": "exec-endpoint-create",
+        "inputDefinitions": {
+          "parameters": {
+            "description": {
+              "type": "STRING"
+            },
+            "display_name": {
+              "type": "STRING"
+            },
+            "encryption_spec_key_name": {
+              "type": "STRING"
+            },
+            "labels": {
+              "type": "STRING"
+            },
+            "location": {
+              "type": "STRING"
+            },
+            "network": {
+              "type": "STRING"
+            },
+            "project": {
+              "type": "STRING"
+            }
+          }
+        },
+        "outputDefinitions": {
+          "artifacts": {
+            "endpoint": {
+              "artifactType": {
+                "schemaTitle": "google.VertexEndpoint",
+                "schemaVersion": "0.0.1"
+              }
+            }
+          },
+          "parameters": {
+            "gcp_resources": {
+              "type": "STRING"
+            }
+          }
+        }
+      },
+      "comp-gen-train-hist-component": {
+        "executorLabel": "exec-gen-train-hist-component",
+        "inputDefinitions": {
+          "parameters": {
+            "project_dict": {
+              "type": "STRING"
+            }
+          }
+        },
+        "outputDefinitions": {
+          "parameters": {
+            "train_hist_fpath": {
+              "type": "STRING"
+            },
+            "train_threshold_fpath": {
+              "type": "STRING"
+            }
+          }
+        }
+      },
+      "comp-import-file-component": {
+        "executorLabel": "exec-import-file-component",
+        "inputDefinitions": {
+          "parameters": {
+            "project_dict": {
+              "type": "STRING"
+            }
+          }
+        },
+        "outputDefinitions": {
+          "parameters": {
+            "test_data_fpath": {
+              "type": "STRING"
+            },
+            "train_data_fpath": {
+              "type": "STRING"
+            }
+          }
+        }
+      },
+      "comp-importer": {
+        "executorLabel": "exec-importer",
+        "inputDefinitions": {
+          "parameters": {
+            "uri": {
+              "type": "STRING"
+            }
+          }
+        },
+        "outputDefinitions": {
+          "artifacts": {
+            "artifact": {
+              "artifactType": {
+                "schemaTitle": "google.UnmanagedContainerModel",
+                "schemaVersion": "0.0.1"
+              }
+            }
+          }
+        }
+      },
+      "comp-model-deploy": {
+        "executorLabel": "exec-model-deploy",
+        "inputDefinitions": {
+          "artifacts": {
+            "endpoint": {
+              "artifactType": {
+                "schemaTitle": "google.VertexEndpoint",
+                "schemaVersion": "0.0.1"
+              }
+            },
+            "model": {
+              "artifactType": {
+                "schemaTitle": "google.VertexModel",
+                "schemaVersion": "0.0.1"
+              }
+            }
+          },
+          "parameters": {
+            "automatic_resources_max_replica_count": {
+              "type": "INT"
+            },
+            "automatic_resources_min_replica_count": {
+              "type": "INT"
+            },
+            "dedicated_resources_accelerator_count": {
+              "type": "INT"
+            },
+            "dedicated_resources_accelerator_type": {
+              "type": "STRING"
+            },
+            "dedicated_resources_machine_type": {
+              "type": "STRING"
+            },
+            "dedicated_resources_max_replica_count": {
+              "type": "INT"
+            },
+            "dedicated_resources_min_replica_count": {
+              "type": "INT"
+            },
+            "deployed_model_display_name": {
+              "type": "STRING"
+            },
+            "disable_container_logging": {
+              "type": "STRING"
+            },
+            "enable_access_logging": {
+              "type": "STRING"
+            },
+            "explanation_metadata": {
+              "type": "STRING"
+            },
+            "explanation_parameters": {
+              "type": "STRING"
+            },
+            "service_account": {
+              "type": "STRING"
+            },
+            "traffic_split": {
+              "type": "STRING"
+            }
+          }
+        },
+        "outputDefinitions": {
+          "parameters": {
+            "gcp_resources": {
+              "type": "STRING"
+            }
+          }
+        }
+      },
+      "comp-model-eval-component": {
+        "executorLabel": "exec-model-eval-component",
+        "inputDefinitions": {
+          "parameters": {
+            "model_filepath": {
+              "type": "STRING"
+            },
+            "test_filepath": {
+              "type": "STRING"
+            }
+          }
+        },
+        "outputDefinitions": {
+          "artifacts": {
+            "metrics": {
+              "artifactType": {
+                "schemaTitle": "system.Metrics",
+                "schemaVersion": "0.0.1"
+              }
+            }
+          }
+        }
+      },
+      "comp-model-eval-test-component": {
+        "executorLabel": "exec-model-eval-test-component",
+        "inputDefinitions": {
+          "artifacts": {
+            "metrics": {
+              "artifactType": {
+                "schemaTitle": "system.Metrics",
+                "schemaVersion": "0.0.1"
+              }
+            }
+          }
+        }
+      },
+      "comp-model-upload": {
+        "executorLabel": "exec-model-upload",
+        "inputDefinitions": {
+          "artifacts": {
+            "unmanaged_container_model": {
+              "artifactType": {
+                "schemaTitle": "google.UnmanagedContainerModel",
+                "schemaVersion": "0.0.1"
+              }
+            }
+          },
+          "parameters": {
+            "artifact_uri": {
+              "type": "STRING"
+            },
+            "description": {
+              "type": "STRING"
+            },
+            "display_name": {
+              "type": "STRING"
+            },
+            "encryption_spec_key_name": {
+              "type": "STRING"
+            },
+            "explanation_metadata": {
+              "type": "STRING"
+            },
+            "explanation_parameters": {
+              "type": "STRING"
+            },
+            "instance_schema_uri": {
+              "type": "STRING"
+            },
+            "labels": {
+              "type": "STRING"
+            },
+            "location": {
+              "type": "STRING"
+            },
+            "parameters_schema_uri": {
+              "type": "STRING"
+            },
+            "prediction_schema_uri": {
+              "type": "STRING"
+            },
+            "project": {
+              "type": "STRING"
+            },
+            "serving_container_args": {
+              "type": "STRING"
+            },
+            "serving_container_command": {
+              "type": "STRING"
+            },
+            "serving_container_environment_variables": {
+              "type": "STRING"
+            },
+            "serving_container_health_route": {
+              "type": "STRING"
+            },
+            "serving_container_image_uri": {
+              "type": "STRING"
+            },
+            "serving_container_ports": {
+              "type": "STRING"
+            },
+            "serving_container_predict_route": {
+              "type": "STRING"
+            }
+          }
+        },
+        "outputDefinitions": {
+          "artifacts": {
+            "model": {
+              "artifactType": {
+                "schemaTitle": "google.VertexModel",
+                "schemaVersion": "0.0.1"
+              }
+            }
+          },
+          "parameters": {
+            "gcp_resources": {
+              "type": "STRING"
+            }
+          }
+        }
+      },
+      "comp-tensorflow-airbus-model-training": {
+        "executorLabel": "exec-tensorflow-airbus-model-training",
+        "inputDefinitions": {
+          "parameters": {
+            "eval_data_dir": {
+              "type": "STRING"
+            },
+            "model_dir": {
+              "type": "STRING"
+            },
+            "train_data_dir": {
+              "type": "STRING"
+            }
+          }
+        },
+        "outputDefinitions": {
+          "parameters": {
+            "gcs_model_path": {
+              "type": "STRING"
+            }
+          }
+        }
+      },
+      "comp-test-deployment-component": {
+        "executorLabel": "exec-test-deployment-component",
+        "inputDefinitions": {
+          "artifacts": {
+            "endpoint": {
+              "artifactType": {
+                "schemaTitle": "system.Artifact",
+                "schemaVersion": "0.0.1"
+              }
+            }
+          },
+          "parameters": {
+            "project_dict": {
+              "type": "STRING"
+            }
+          }
+        }
+      }
+    },
+    "deploymentSpec": {
+      "executors": {
+        "exec-endpoint-create": {
+          "container": {
+            "args": [
+              "--type",
+              "CreateEndpoint",
+              "--payload",
+              "{\"display_name\": \"{{$.inputs.parameters['display_name']}}\", \"description\": \"{{$.inputs.parameters['description']}}\", \"labels\": {{$.inputs.parameters['labels']}}, \"encryption_spec\": {\"kms_key_name\":\"{{$.inputs.parameters['encryption_spec_key_name']}}\"}, \"network\": \"{{$.inputs.parameters['network']}}\"}",
+              "--project",
+              "{{$.inputs.parameters['project']}}",
+              "--location",
+              "{{$.inputs.parameters['location']}}",
+              "--gcp_resources",
+              "{{$.outputs.parameters['gcp_resources'].output_file}}",
+              "--executor_input",
+              "{{$}}"
+            ],
+            "command": [
+              "python3",
+              "-u",
+              "-m",
+              "google_cloud_pipeline_components.container.v1.gcp_launcher.launcher"
+            ],
+            "image": "gcr.io/ml-pipeline/google-cloud-pipeline-components:1.0.9"
+          }
+        },
+        "exec-gen-train-hist-component": {
+          "container": {
+            "args": [
+              "--executor_input",
+              "{{$}}",
+              "--function_to_execute",
+              "gen_train_hist_component"
+            ],
+            "command": [
+              "sh",
+              "-c",
+              "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet     --no-warn-script-location 'google-cloud-storage' 'opencv-python-headless' 'pandas' 'pyarrow' 'fsspec' 'gcsfs' 'kfp==1.8.12' && \"$0\" \"$@\"\n",
+              "sh",
+              "-ec",
+              "program_path=$(mktemp -d)\nprintf \"%s\" \"$0\" > \"$program_path/ephemeral_component.py\"\npython3 -m kfp.v2.components.executor_main                         --component_module_path                         \"$program_path/ephemeral_component.py\"                         \"$@\"\n",
+              "\nimport kfp\nfrom kfp.v2 import dsl\nfrom kfp.v2.dsl import *\nfrom typing import *\n\ndef gen_train_hist_component(\n    project_dict: dict\n    ) -> NamedTuple(\n    \"Outputs\",\n    [\n        (\"train_hist_fpath\", str),  # Return path to histogram of training data.\n        (\"train_threshold_fpath\", str),  # Return path to threshold value.\n    ],\n    ):\n\n    import cv2\n    import urllib\n    import numpy as np\n    import pandas as pd\n    from google.cloud import storage\n\n\n    PROJECT_ID = project_dict['PROJECT_ID']\n    GCS_BUCKET = project_dict['GCS_BUCKET']\n    GCS_TRAIN_IMAGES=f\"gs://{GCS_BUCKET}/train_v2/\"\n\n    # read the parquet files\n    train_data = pd.read_parquet(f\"gs://{GCS_BUCKET}/train.parquet\")\n    test_data = pd.read_parquet(f\"gs://{GCS_BUCKET}/test.parquet\")\n\n    # load training images to calculate histogram\n    gcs_url = f\"https://storage.googleapis.com/{GCS_TRAIN_IMAGES.replace('gs://','')}\"\n\n    train_images = []\n    test_images = []\n\n    for image_id in train_data['ImageId']:\n        resp = urllib.request.urlopen(f'{gcs_url}{image_id}')\n        image = np.asarray(bytearray(resp.read()), dtype=\"uint8\")\n        image = cv2.imdecode(image, cv2.IMREAD_COLOR)\n        train_images.append(image)\n\n    for image_id in test_data['ImageId']:\n        resp = urllib.request.urlopen(f'{gcs_url}{image_id}')\n        image = np.asarray(bytearray(resp.read()), dtype=\"uint8\")\n        image = cv2.imdecode(image, cv2.IMREAD_COLOR)\n        test_images.append(image)\n\n    channels = [0, 1, 2]\n    hist_size = [256] * 3\n    hist_ranges = [0, 256] * 3\n\n    # compute the image histograms for training data\n    train_hist = cv2.calcHist(train_images,\n                              channels,\n                              None,\n                              hist_size,\n                              hist_ranges,\n                              accumulate = True)\n    cv2.normalize(train_hist, train_hist, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX)\n\n    # compute the image histograms for training data\n    test_hist = cv2.calcHist(test_images,\n                             channels,\n                             None,\n                             hist_size,\n                             hist_ranges,\n                             accumulate = True)\n    cv2.normalize(test_hist, test_hist, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX)\n\n    # use correlation method for comparison\n    threshold = cv2.compareHist(train_hist, test_hist, 0)\n\n    # reshaping the array from 3D matrice to 2D matrice.\n    arrReshaped = train_hist.reshape(train_hist.shape[0], -1)\n    # saving reshaped array to file.\n    np.savetxt('train_hist.csv', arrReshaped)\n\n    with open('train_threshold.txt','w') as f:\n        f.write(f'{threshold}')\n\n    # move the files to GCS\n    bucket = storage.Client().bucket(GCS_BUCKET)\n\n    blob = bucket.blob('train_hist.csv')\n    blob.upload_from_filename('train_hist.csv')\n    blob = bucket.blob('train_threshold.txt')\n    blob.upload_from_filename('train_threshold.txt')\n\n    return f\"gs://{GCS_BUCKET}/train_hist.csv\", f\"gs://{GCS_BUCKET}/train_threshold.txt\"\n\n"
+            ],
+            "image": "python:3.9"
+          }
+        },
+        "exec-import-file-component": {
+          "container": {
+            "args": [
+              "--executor_input",
+              "{{$}}",
+              "--function_to_execute",
+              "import_file_component"
+            ],
+            "command": [
+              "sh",
+              "-c",
+              "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet     --no-warn-script-location 'google-cloud-storage' 'google-cloud-bigquery' 'tensorflow' 'sklearn' 'pandas' 'scikit-image' 'db-dtypes' 'google-auth' 'fsspec' 'pyarrow' 'kfp==1.8.12' && \"$0\" \"$@\"\n",
+              "sh",
+              "-ec",
+              "program_path=$(mktemp -d)\nprintf \"%s\" \"$0\" > \"$program_path/ephemeral_component.py\"\npython3 -m kfp.v2.components.executor_main                         --component_module_path                         \"$program_path/ephemeral_component.py\"                         \"$@\"\n",
+              "\nimport kfp\nfrom kfp.v2 import dsl\nfrom kfp.v2.dsl import *\nfrom typing import *\n\ndef import_file_component(\n    project_dict: dict\n    ) -> NamedTuple(\n    \"Outputs\",\n    [\n        (\"train_data_fpath\", str),  # Return parameter.\n        (\"test_data_fpath\", str),  # Return generic Artifact.\n    ],\n    ):\n\n    import requests\n    import os\n    import logging\n    from sklearn.utils import resample\n    from google.cloud import bigquery, storage\n    import pandas as pd\n    import numpy as np\n    import tensorflow as tf\n    from google.oauth2 import service_account\n    from skimage.segmentation import mark_boundaries\n    from skimage.util import montage as montage2d\n    from skimage.io import imread\n    from skimage.segmentation import mark_boundaries\n    from skimage.util import montage\n    from skimage.morphology import label\n\n    #TODO: How to improve these functions ?\n    def rle_decode_tf(mask_rle, shape=(768, 768)):\n\n        shape = tf.convert_to_tensor(shape, tf.int64)\n        size = tf.math.reduce_prod(shape)\n        # Split string\n        s = tf.strings.split(mask_rle)\n        s = tf.strings.to_number(s, tf.int64)\n        # Get starts and lengths\n        starts = s[::2] - 1\n        lens = s[1::2]\n        # Make ones to be scattered\n        total_ones = tf.reduce_sum(lens)\n        ones = tf.ones([total_ones], tf.uint8)\n        # Make scattering indices\n        r = tf.range(total_ones)\n        lens_cum = tf.math.cumsum(lens)\n        s = tf.searchsorted(lens_cum, r, 'right')\n        idx = r + tf.gather(starts - tf.pad(lens_cum[:-1], [(1, 0)]), s)\n        # Scatter ones into flattened mask\n        mask_flat = tf.scatter_nd(tf.expand_dims(idx, 1), ones, [size])\n        return tf.expand_dims(tf.transpose(tf.reshape(mask_flat, shape)), axis=2)\n\n    def multi_rle_encode(img):\n        labels = label(img[:, :, 0])\n        return [rle_encode(labels==k) for k in np.unique(labels[labels>0])]\n\n    # ref: https://www.kaggle.com/paulorzp/run-length-encode-and-decode\n    def rle_encode(img):\n        '''\n        img: numpy array, 1 - mask, 0 - background\n        Returns run length as string formated\n        '''\n        pixels = img.T.flatten()\n        pixels = np.concatenate([[0], pixels, [0]])\n        runs = np.where(pixels[1:] != pixels[:-1])[0] + 1\n        runs[1::2] -= runs[::2]\n        return ' '.join(str(x) for x in runs)\n\n    def rle_decode(mask_rle, shape=(768, 768)):\n        '''\n        mask_rle: run-length as string formated (start length)\n        shape: (height,width) of array to return \n        Returns numpy array, 1 - mask, 0 - background\n        '''\n        s = mask_rle.split()\n        starts, lengths = [np.asarray(x, dtype=int) for x in (s[0:][::2], s[1:][::2])]\n        starts -= 1\n        ends = starts + lengths\n        img = np.zeros(shape[0]*shape[1], dtype=np.uint8)\n        for lo, hi in zip(starts, ends):\n            img[lo:hi] = 1\n        return img.reshape(shape).T   # Needed to align to RLE direction\n\n    def masks_as_image(in_mask_list):\n        #in_mask_list = tf.compat.as_str_any(in_mask_list)\n        # Take the individual ship masks and create a single mask array for all ships\n        all_masks = np.zeros((768, 768), dtype = np.int16)\n        #if isinstance(in_mask_list, list):\n        for mask in in_mask_list:\n            if isinstance(mask, str):\n                all_masks += rle_decode(mask)\n        return np.expand_dims(all_masks, -1)\n\n    def merge_rle_encode(mask_rle, shape=(768, 768)):\n        img = np.zeros(shape=shape, dtype=np.uint8)\n\n        for rle in mask_rle.split(\";\"):\n            img += rle_decode(rle)\n\n        return rle_encode(img)\n\n    def parse_db_to_img(filename, label):\n        file_path = filename\n        img = tf.io.read_file(file_path)\n        image = tf.image.decode_jpeg(img, channels=3)\n        label_img = rle_decode_tf(label)\n\n        return image, label_img\n\n    BATCH_SIZE = 16\n    EDGE_CROP = 16\n    NB_EPOCHS = 10\n    GAUSSIAN_NOISE = 0.1\n    UPSAMPLE_MODE = 'SIMPLE'\n    # downsampling inside the network\n    NET_SCALING = None\n    # downsampling in preprocessing\n    IMG_SCALING = (1, 1)\n    # number of validation images to use\n    VALID_IMG_COUNT = 10\n    # maximum number of steps_per_epoch in training\n    MAX_TRAIN_STEPS = 200\n    AUGMENT_BRIGHTNESS = False\n    N_SAMPLE = 100\n    IMG_SHAPE = (128, 128)\n\n    PROJECT_ID = project_dict['PROJECT_ID']\n    GCS_BUCKET = project_dict['GCS_BUCKET']\n    REGION = project_dict['REGION']\n    TABLE_BQ = project_dict['TABLE_BQ']\n\n    bucket = storage.Client().bucket(GCS_BUCKET)\n\n\n    try: \n        bqclient = bigquery.Client(project=PROJECT_ID, location=REGION)\n        logging.info(\"No authentication required!\")\n    except:\n        logging.info(\"Try a hacky way\")\n        blob = bucket.blob(\"mle-airbus-detection-smu-b1f8ee58e814.json\")\n        blob.download_to_filename(\"mle-airbus-detection-smu-b1f8ee58e814.json\")\n        credentials = service_account.Credentials.from_service_account_file(\n            \"mle-airbus-detection-smu-b1f8ee58e814.json\", scopes=[\"https://www.googleapis.com/auth/cloud-platform\"],\n        )\n\n        bqclient = bigquery.Client(credentials=credentials, project=PROJECT_ID, location=REGION)\n        logging.info(\"Authenticated!\")\n\n    # Download a table.\n    table = bigquery.TableReference.from_string(\n        #TODO: replace with param\n        \"mle-airbus-detection-smu.airbus_data.label_data\"\n    )\n    rows = bqclient.list_rows(\n        table\n    )\n    masks = rows.to_dataframe(\n        # Optionally, explicitly request to use the BigQuery Storage API. As of\n        # google-cloud-bigquery version 1.26.0 and above, the BigQuery Storage\n        # API is used by default.\n        create_bqstorage_client=True,\n    )\n\n    #TODO: parame\n    masks = masks[:20000]\n    masks.replace(to_replace=[None], value='', inplace=True)\n    masks = masks.groupby(['ImageId'])['EncodedPixels'].apply(lambda x: ';'.join(x) if x is not None else ';'.join('')).reset_index()\n\n    masks['ships'] = masks['EncodedPixels'].map(lambda c_row: c_row.count(\";\"))\n    unique_img_ids = masks.groupby('ImageId').agg({'ships': 'sum'}).reset_index()\n    unique_img_ids['has_ship'] = unique_img_ids['ships'].map(lambda x: 1.0 if x>0 else 0.0)\n    unique_img_ids['has_ship_vec'] = unique_img_ids['has_ship'].map(lambda x: [x])\n    masks.drop(['ships'], axis=1, inplace=True)\n    unique_img_ids.sample(5)\n    masks.EncodedPixels = masks.EncodedPixels.apply(lambda x: merge_rle_encode(x))\n\n    from sklearn.model_selection import train_test_split\n    train_ids, valid_ids = train_test_split(unique_img_ids, \n                     test_size = 0.3, \n                     stratify = unique_img_ids['ships'])\n    train_df = pd.merge(masks, train_ids)\n    valid_df = pd.merge(masks, valid_ids)\n    print(train_df.shape[0], 'training masks')\n    print(valid_df.shape[0], 'validation masks')\n\n    train_df_balanced = pd.DataFrame()\n    for ship_num in train_df['ships'].unique():\n        train_df_balanced = train_df_balanced.append(resample(train_df.query(\"ships == {}\".format(ship_num)), n_samples=N_SAMPLE))\n    train_df_balanced.reset_index(drop=True, inplace=True)\n\n    valid_df_balanced = pd.DataFrame()\n    for ship_num in valid_df['ships'].unique():\n        valid_df_balanced = valid_df_balanced.append(resample(valid_df.query(\"ships == {}\".format(ship_num)), n_samples=N_SAMPLE//10))\n\n    #TODO: make this nicer , don't hard code\n    train_df_balanced.to_parquet(f\"train.parquet\")\n    valid_df_balanced.to_parquet(f\"test.parquet\")\n\n    blob = bucket.blob('train.parquet')\n    blob.upload_from_filename('train.parquet')\n    blob = bucket.blob('test.parquet')\n    blob.upload_from_filename('test.parquet')\n\n    #return f\"gs://{GCS_BUCKET}/train.parquet\", f\"gs://{GCS_BUCKET}/test.parquet\"\n    return f\"gs://{GCS_BUCKET}/train.parquet\", f\"gs://{GCS_BUCKET}/test.parquet\"\n\n"
+            ],
+            "image": "python:3.7"
+          }
+        },
+        "exec-importer": {
+          "importer": {
+            "artifactUri": {
+              "runtimeParameter": "uri"
+            },
+            "metadata": {
+              "containerSpec": {
+                "imageUri": "us-docker.pkg.dev/vertex-ai/prediction/tf2-cpu.2-8:latest"
+              }
+            },
+            "typeSchema": {
+              "schemaTitle": "google.UnmanagedContainerModel",
+              "schemaVersion": "0.0.1"
+            }
+          }
+        },
+        "exec-model-deploy": {
+          "container": {
+            "args": [
+              "--type",
+              "DeployModel",
+              "--payload",
+              "{\"endpoint\": \"{{$.inputs.artifacts['endpoint'].metadata['resourceName']}}\", \"traffic_split\": {{$.inputs.parameters['traffic_split']}}, \"deployed_model\": {\"model\": \"{{$.inputs.artifacts['model'].metadata['resourceName']}}\", \"dedicated_resources\": {\"machine_spec\": {\"machine_type\": \"{{$.inputs.parameters['dedicated_resources_machine_type']}}\", \"accelerator_type\": \"{{$.inputs.parameters['dedicated_resources_accelerator_type']}}\", \"accelerator_count\": {{$.inputs.parameters['dedicated_resources_accelerator_count']}}}, \"min_replica_count\": {{$.inputs.parameters['dedicated_resources_min_replica_count']}}, \"max_replica_count\": {{$.inputs.parameters['dedicated_resources_max_replica_count']}}}, \"automatic_resources\": {\"min_replica_count\": {{$.inputs.parameters['automatic_resources_min_replica_count']}}, \"max_replica_count\": {{$.inputs.parameters['automatic_resources_max_replica_count']}}}, \"service_account\": \"{{$.inputs.parameters['service_account']}}\", \"disable_container_logging\": {{$.inputs.parameters['disable_container_logging']}}, \"enable_access_logging\": {{$.inputs.parameters['enable_access_logging']}}, \"explanation_spec\": {\"parameters\": {{$.inputs.parameters['explanation_parameters']}}, \"metadata\": {{$.inputs.parameters['explanation_metadata']}}}}}",
+              "--project",
+              "",
+              "--location",
+              "",
+              "--gcp_resources",
+              "{{$.outputs.parameters['gcp_resources'].output_file}}"
+            ],
+            "command": [
+              "python3",
+              "-u",
+              "-m",
+              "google_cloud_pipeline_components.container.v1.gcp_launcher.launcher"
+            ],
+            "image": "gcr.io/ml-pipeline/google-cloud-pipeline-components:1.0.9"
+          }
+        },
+        "exec-model-eval-component": {
+          "container": {
+            "args": [
+              "--executor_input",
+              "{{$}}",
+              "--function_to_execute",
+              "model_eval_component"
+            ],
+            "command": [
+              "sh",
+              "-c",
+              "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet     --no-warn-script-location 'tensorflow' 'numpy' 'pandas' 'google-cloud-storage' 'fsspec' 'pyarrow' 'kfp==1.8.12' && \"$0\" \"$@\"\n",
+              "sh",
+              "-ec",
+              "program_path=$(mktemp -d)\nprintf \"%s\" \"$0\" > \"$program_path/ephemeral_component.py\"\npython3 -m kfp.v2.components.executor_main                         --component_module_path                         \"$program_path/ephemeral_component.py\"                         \"$@\"\n",
+              "\nimport kfp\nfrom kfp.v2 import dsl\nfrom kfp.v2.dsl import *\nfrom typing import *\n\ndef model_eval_component(\n    test_filepath: str,\n    model_filepath: str,\n    metrics: Output[Metrics]\n):\n    import tensorflow.keras.backend as K\n    import tensorflow as tf\n    import numpy as np\n    import pandas as pd\n    from tensorflow.keras import layers\n    from tensorflow.keras.optimizers import Adam\n    from tensorflow.keras.losses import binary_crossentropy,BinaryCrossentropy \n    from google.cloud import storage\n\n\n    class Augment(tf.keras.layers.Layer):\n        def __init__(self,  resize_shape=(768, 768), train=True, seed=42):\n            super().__init__()\n        # both use the same seed, so they'll make the same random changes.\n            seed = np.random.randint(1000)\n            if train:\n                self.augment_inputs = tf.keras.Sequential(\n                                        [\n                                            layers.experimental.preprocessing.RandomFlip(seed=seed),\n                                            layers.experimental.preprocessing.RandomRotation(0.1, seed=seed),\n                                            layers.experimental.preprocessing.RandomHeight(0.1, seed=seed),\n                                            layers.experimental.preprocessing.RandomWidth(0.1, seed=seed),\n                                            layers.experimental.preprocessing.RandomZoom(0.9, seed=seed),\n                                            layers.experimental.preprocessing.Rescaling(1.0 / 255),\n                                            layers.experimental.preprocessing.Resizing(resize_shape[0], resize_shape[0])\n                                        ]\n                                    )\n\n                self.augment_labels = tf.keras.Sequential(\n                                        [\n                                            layers.experimental.preprocessing.RandomFlip(seed=seed),\n                                            layers.experimental.preprocessing.RandomRotation(0.1, seed=seed),\n                                            layers.experimental.preprocessing.RandomHeight(0.1, seed=seed),\n                                            layers.experimental.preprocessing.RandomWidth(0.1, seed=seed),\n                                            layers.experimental.preprocessing.RandomZoom(0.9, seed=seed),\n                                            layers.experimental.preprocessing.Resizing(resize_shape[0], resize_shape[0])\n                                        ]\n                                    )\n            else:\n                self.augment_inputs = tf.keras.Sequential(\n                                        [\n                                            layers.experimental.preprocessing.Rescaling(1.0 / 255),\n                                            layers.experimental.preprocessing.Resizing(resize_shape[0], resize_shape[0])\n                                        ]\n                                    )\n\n                self.augment_labels = tf.keras.Sequential(\n                                        [\n                                            layers.experimental.preprocessing.Resizing(resize_shape[0], resize_shape[0])\n                                        ]\n                                    )       \n\n        def call(self, inputs, labels):\n            inputs = self.augment_inputs(inputs)\n            labels = self.augment_labels(labels)\n            return inputs, labels\n\n    def dice_coef(y_true, y_pred, smooth=1):\n        intersection = K.sum(y_true * y_pred, axis=[1,2,3])\n        union = K.sum(y_true, axis=[1,2,3]) + K.sum(y_pred, axis=[1,2,3])\n        return K.mean( (2. * intersection + smooth) / (union + smooth), axis=0)\n\n    def dice_p_bce(in_gt, in_pred):\n        return 1e-3*binary_crossentropy(in_gt, in_pred) - dice_coef(in_gt, in_pred)\n\n    def true_positive_rate(y_true, y_pred):\n        return K.sum(K.flatten(y_true)*K.flatten(K.round(y_pred)))/K.sum(y_true)\n\n    #TODO: How to improve these functions ?\n    def rle_decode_tf(mask_rle, shape=(768, 768)):\n\n        shape = tf.convert_to_tensor(shape, tf.int64)\n        size = tf.math.reduce_prod(shape)\n        # Split string\n        s = tf.strings.split(mask_rle)\n        s = tf.strings.to_number(s, tf.int64)\n        # Get starts and lengths\n        starts = s[::2] - 1\n        lens = s[1::2]\n        # Make ones to be scattered\n        total_ones = tf.reduce_sum(lens)\n        ones = tf.ones([total_ones], tf.uint8)\n        # Make scattering indices\n        r = tf.range(total_ones)\n        lens_cum = tf.math.cumsum(lens)\n        s = tf.searchsorted(lens_cum, r, 'right')\n        idx = r + tf.gather(starts - tf.pad(lens_cum[:-1], [(1, 0)]), s)\n        # Scatter ones into flattened mask\n        mask_flat = tf.scatter_nd(tf.expand_dims(idx, 1), ones, [size])\n        return tf.expand_dims(tf.transpose(tf.reshape(mask_flat, shape)), axis=2)\n\n    def parse_db_to_img(filename, label):\n        file_path = filename\n        img = tf.io.read_file(file_path)\n        image = tf.image.decode_jpeg(img, channels=3)\n        label_img = rle_decode_tf(label)\n\n        return image, label_img\n\n    IMG_SHAPE=(128,128)\n    GCS_BUCKET=\"mle_airbus_dataset\"\n    BATCH_SIZE = 16\n    EDGE_CROP = 16\n    NB_EPOCHS = 10\n    GAUSSIAN_NOISE = 0.1\n    UPSAMPLE_MODE = 'SIMPLE'\n    # downsampling inside the network\n    NET_SCALING = None\n    # downsampling in preprocessing\n    IMG_SCALING = (1, 1)\n    # number of validation images to use\n    VALID_IMG_COUNT = 10\n    # maximum number of steps_per_epoch in training\n    MAX_TRAIN_STEPS = 200\n    AUGMENT_BRIGHTNESS = False\n    N_SAMPLE = 100\n    bucket = storage.Client().bucket(GCS_BUCKET)\n\n    blob = bucket.blob(\"test.parquet\")\n    blob.download_to_filename(\"test.parquet\")\n\n    valid_df = pd.read_parquet(f\"test.parquet\")\n    validation = tf.data.Dataset.from_tensor_slices((valid_df['ImageId'].values, valid_df['EncodedPixels'].values))\n    validation = validation.shuffle(buffer_size=10)\n    validation = validation.map(lambda x, y: parse_db_to_img(\"gs://mle_airbus_dataset/train_v2/\" + x, y))\n    validation = validation.batch(BATCH_SIZE)\n    validation = validation.map(Augment(resize_shape=IMG_SHAPE, train=False))\n    validation = validation.cache().prefetch(buffer_size=tf.data.AUTOTUNE)\n    model_eval = tf.keras.models.load_model(f'gs://{GCS_BUCKET}/trained_model/segm_full_200_20220626-143859/', compile=False)\n    model_eval.compile(optimizer=Adam(1e-4, decay=1e-6), loss=dice_p_bce, metrics=[dice_coef, 'binary_accuracy', true_positive_rate])\n    result = model_eval.evaluate(validation)\n    metrics.log_metric(\"dice_coef\", (result[1]))\n    metrics.log_metric(\"binary_accuracy\", (result[2]))\n    metrics.log_metric(\"true_positive_rate\", (result[3]))\n\n"
+            ],
+            "image": "python:3.7"
+          }
+        },
+        "exec-model-eval-test-component": {
+          "container": {
+            "args": [
+              "--executor_input",
+              "{{$}}",
+              "--function_to_execute",
+              "model_eval_test_component"
+            ],
+            "command": [
+              "sh",
+              "-c",
+              "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet     --no-warn-script-location 'kfp==1.8.12' && \"$0\" \"$@\"\n",
+              "sh",
+              "-ec",
+              "program_path=$(mktemp -d)\nprintf \"%s\" \"$0\" > \"$program_path/ephemeral_component.py\"\npython3 -m kfp.v2.components.executor_main                         --component_module_path                         \"$program_path/ephemeral_component.py\"                         \"$@\"\n",
+              "\nimport kfp\nfrom kfp.v2 import dsl\nfrom kfp.v2.dsl import *\nfrom typing import *\n\ndef model_eval_test_component(\n    metrics: Input[Metrics]\n):\n    \"\"\"\n    Unit test component that checks if the output metrics passed\n    thresholds\n    \"\"\"\n    import logging\n\n    metrics_thresholds = {\n        'dice_coef': 0.1,\n        'binary_accuracy': 0.8,\n        'true_positive_rate': 0.3\n    }\n\n    for k, v in metrics.metadata.items():\n        assert v >= metrics_thresholds[k]\n        logging.info(f\"{k}:{v}, threshold: {metrics_thresholds[k]}. Passed.\")\n\n"
+            ],
+            "image": "python:3.7"
+          }
+        },
+        "exec-model-upload": {
+          "container": {
+            "args": [
+              "--type",
+              "UploadModel",
+              "--payload",
+              "{\"display_name\": \"{{$.inputs.parameters['display_name']}}\", \"description\": \"{{$.inputs.parameters['description']}}\", \"predict_schemata\": {\"instance_schema_uri\": \"{{$.inputs.parameters['instance_schema_uri']}}\", \"parameters_schema_uri\": \"{{$.inputs.parameters['parameters_schema_uri']}}\", \"prediction_schema_uri\": \"{{$.inputs.parameters['prediction_schema_uri']}}\"}, \"container_spec\": {\"image_uri\": \"{{$.inputs.parameters['serving_container_image_uri']}}\", \"command\": {{$.inputs.parameters['serving_container_command']}}, \"args\": {{$.inputs.parameters['serving_container_args']}}, \"env\": {{$.inputs.parameters['serving_container_environment_variables']}}, \"ports\": {{$.inputs.parameters['serving_container_ports']}}, \"predict_route\": \"{{$.inputs.parameters['serving_container_predict_route']}}\", \"health_route\": \"{{$.inputs.parameters['serving_container_health_route']}}\"}, \"artifact_uri\": \"{{$.inputs.parameters['artifact_uri']}}\", \"explanation_spec\": {\"parameters\": {{$.inputs.parameters['explanation_parameters']}}, \"metadata\": {{$.inputs.parameters['explanation_metadata']}}}, \"encryption_spec\": {\"kms_key_name\":\"{{$.inputs.parameters['encryption_spec_key_name']}}\"}, \"labels\": {{$.inputs.parameters['labels']}}}",
+              "--project",
+              "{{$.inputs.parameters['project']}}",
+              "--location",
+              "{{$.inputs.parameters['location']}}",
+              "--gcp_resources",
+              "{{$.outputs.parameters['gcp_resources'].output_file}}",
+              "--executor_input",
+              "{{$}}"
+            ],
+            "command": [
+              "python3",
+              "-u",
+              "-m",
+              "google_cloud_pipeline_components.container.v1.gcp_launcher.launcher"
+            ],
+            "image": "gcr.io/ml-pipeline/google-cloud-pipeline-components:1.0.9"
+          }
+        },
+        "exec-tensorflow-airbus-model-training": {
+          "container": {
+            "command": [
+              "python",
+              "./src/model_training/task.py",
+              "--model-dir",
+              "{{$.inputs.parameters['model_dir']}}",
+              "--train-data-dir",
+              "{{$.inputs.parameters['train_data_dir']}}",
+              "--eval-data-dir",
+              "{{$.inputs.parameters['eval_data_dir']}}",
+              "--out-model",
+              "{{$.outputs.parameters['gcs_model_path'].output_file}}"
+            ],
+            "image": "asia-east1-docker.pkg.dev/mle-airbus-detection-smu/airbus-mle/trainer-airbus-model-ey:latest"
+          }
+        },
+        "exec-test-deployment-component": {
+          "container": {
+            "args": [
+              "--executor_input",
+              "{{$}}",
+              "--function_to_execute",
+              "test_deployment_component"
+            ],
+            "command": [
+              "sh",
+              "-c",
+              "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet     --no-warn-script-location 'numpy' 'google-cloud-aiplatform' 'google-cloud-storage' 'Pillow' 'kfp==1.8.12' && \"$0\" \"$@\"\n",
+              "sh",
+              "-ec",
+              "program_path=$(mktemp -d)\nprintf \"%s\" \"$0\" > \"$program_path/ephemeral_component.py\"\npython3 -m kfp.v2.components.executor_main                         --component_module_path                         \"$program_path/ephemeral_component.py\"                         \"$@\"\n",
+              "\nimport kfp\nfrom kfp.v2 import dsl\nfrom kfp.v2.dsl import *\nfrom typing import *\n\ndef test_deployment_component(\n    endpoint: Input[Artifact],\n    project_dict: dict\n    ):\n    import logging\n    import numpy as np\n    import google.cloud.aiplatform as aip\n    from google.cloud import storage\n    from io import BytesIO\n    from PIL import Image   \n\n    PROJECT_ID = project_dict['PROJECT_ID']\n    REGION = project_dict['REGION']\n    GCS_BUCKET = project_dict['GCS_BUCKET']\n    aip.init(project=PROJECT_ID, location=REGION)\n    logging.info(endpoint.uri)\n    logging.info(endpoint.metadata)\n\n    client = storage.Client() # Implicit environment set up\n    bucket = client.get_bucket(GCS_BUCKET)\n    fname_list = ['00b846e38.jpg', '060ea266e.jpg', '0aa565354.jpg', '00ce2c1c0.jpg', '0a286fb15.jpg']\n    img_ori_list = []\n\n    for fname in fname_list:\n        blob = bucket.get_blob(f'train_v2/{fname}')\n        img_big = Image.open(BytesIO(blob.download_as_bytes()))\n        img_ori_list.append(img_big)\n\n    endpoint = aip.Endpoint(endpoint.uri.split(\"/\")[-1])\n\n    for idx, image in enumerate(img_ori_list):\n        img = image.resize((128, 128))\n        input_img = (np.array(img.getdata())/255.0).reshape(128, 128, 3).tolist()\n        prediction = endpoint.predict(instances=[input_img])\n        result = np.array(prediction.predictions)[0]\n\n    logging.info(\"Model deployment unit testing passed!\")\n\n"
+            ],
+            "image": "python:3.7"
+          }
+        }
+      }
+    },
+    "pipelineInfo": {
+      "name": "airbus-mle"
+    },
+    "root": {
+      "dag": {
+        "outputs": {
+          "artifacts": {
+            "model-eval-component-metrics": {
+              "artifactSelectors": [
+                {
+                  "outputArtifactKey": "metrics",
+                  "producerSubtask": "model-eval-component"
+                }
+              ]
+            }
+          }
+        },
+        "tasks": {
+          "endpoint-create": {
+            "cachingOptions": {
+              "enableCache": true
+            },
+            "componentRef": {
+              "name": "comp-endpoint-create"
+            },
+            "inputs": {
+              "parameters": {
+                "description": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "display_name": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "airbus-mle-endpoint"
+                    }
+                  }
+                },
+                "encryption_spec_key_name": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "labels": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "{}"
+                    }
+                  }
+                },
+                "location": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "asia-east1"
+                    }
+                  }
+                },
+                "network": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "project": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "mle-airbus-detection-smu"
+                    }
+                  }
+                }
+              }
+            },
+            "taskInfo": {
+              "name": "Create end point for deployment"
+            }
+          },
+          "gen-train-hist-component": {
+            "cachingOptions": {
+              "enableCache": true
+            },
+            "componentRef": {
+              "name": "comp-gen-train-hist-component"
+            },
+            "dependentTasks": [
+              "import-file-component"
+            ],
+            "inputs": {
+              "parameters": {
+                "project_dict": {
+                  "componentInputParameter": "project_dict"
+                }
+              }
+            },
+            "taskInfo": {
+              "name": "Generate input image statistics"
+            }
+          },
+          "import-file-component": {
+            "cachingOptions": {
+              "enableCache": true
+            },
+            "componentRef": {
+              "name": "comp-import-file-component"
+            },
+            "inputs": {
+              "parameters": {
+                "project_dict": {
+                  "componentInputParameter": "project_dict"
+                }
+              }
+            },
+            "taskInfo": {
+              "name": "Import data from BigQuery and run preprocessing"
+            }
+          },
+          "importer": {
+            "cachingOptions": {
+              "enableCache": true
+            },
+            "componentRef": {
+              "name": "comp-importer"
+            },
+            "dependentTasks": [
+              "model-eval-test-component",
+              "tensorflow-airbus-model-training"
+            ],
+            "inputs": {
+              "parameters": {
+                "uri": {
+                  "taskOutputParameter": {
+                    "outputParameterKey": "gcs_model_path",
+                    "producerTask": "tensorflow-airbus-model-training"
+                  }
+                }
+              }
+            },
+            "taskInfo": {
+              "name": "Import trained model image"
+            }
+          },
+          "model-deploy": {
+            "cachingOptions": {
+              "enableCache": true
+            },
+            "componentRef": {
+              "name": "comp-model-deploy"
+            },
+            "dependentTasks": [
+              "endpoint-create",
+              "model-upload"
+            ],
+            "inputs": {
+              "artifacts": {
+                "endpoint": {
+                  "taskOutputArtifact": {
+                    "outputArtifactKey": "endpoint",
+                    "producerTask": "endpoint-create"
+                  }
+                },
+                "model": {
+                  "taskOutputArtifact": {
+                    "outputArtifactKey": "model",
+                    "producerTask": "model-upload"
+                  }
+                }
+              },
+              "parameters": {
+                "automatic_resources_max_replica_count": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "intValue": "0"
+                    }
+                  }
+                },
+                "automatic_resources_min_replica_count": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "intValue": "0"
+                    }
+                  }
+                },
+                "dedicated_resources_accelerator_count": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "intValue": "0"
+                    }
+                  }
+                },
+                "dedicated_resources_accelerator_type": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "dedicated_resources_machine_type": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "n1-standard-4"
+                    }
+                  }
+                },
+                "dedicated_resources_max_replica_count": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "intValue": "1"
+                    }
+                  }
+                },
+                "dedicated_resources_min_replica_count": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "intValue": "1"
+                    }
+                  }
+                },
+                "deployed_model_display_name": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "airbus-mle-deploy"
+                    }
+                  }
+                },
+                "disable_container_logging": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "intValue": "0"
+                    }
+                  }
+                },
+                "enable_access_logging": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "intValue": "0"
+                    }
+                  }
+                },
+                "explanation_metadata": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "{}"
+                    }
+                  }
+                },
+                "explanation_parameters": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "{}"
+                    }
+                  }
+                },
+                "service_account": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "traffic_split": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "{\"0\": 100}"
+                    }
+                  }
+                }
+              }
+            },
+            "taskInfo": {
+              "name": "Model deployment and serving"
+            }
+          },
+          "model-eval-component": {
+            "cachingOptions": {
+              "enableCache": true
+            },
+            "componentRef": {
+              "name": "comp-model-eval-component"
+            },
+            "dependentTasks": [
+              "import-file-component",
+              "tensorflow-airbus-model-training"
+            ],
+            "inputs": {
+              "parameters": {
+                "model_filepath": {
+                  "taskOutputParameter": {
+                    "outputParameterKey": "gcs_model_path",
+                    "producerTask": "tensorflow-airbus-model-training"
+                  }
+                },
+                "test_filepath": {
+                  "taskOutputParameter": {
+                    "outputParameterKey": "test_data_fpath",
+                    "producerTask": "import-file-component"
+                  }
+                }
+              }
+            },
+            "taskInfo": {
+              "name": "Run model evaluation on selected metrics"
+            }
+          },
+          "model-eval-test-component": {
+            "cachingOptions": {
+              "enableCache": true
+            },
+            "componentRef": {
+              "name": "comp-model-eval-test-component"
+            },
+            "dependentTasks": [
+              "model-eval-component"
+            ],
+            "inputs": {
+              "artifacts": {
+                "metrics": {
+                  "taskOutputArtifact": {
+                    "outputArtifactKey": "metrics",
+                    "producerTask": "model-eval-component"
+                  }
+                }
+              }
+            },
+            "taskInfo": {
+              "name": "Test if model evaluation results passed"
+            }
+          },
+          "model-upload": {
+            "cachingOptions": {
+              "enableCache": true
+            },
+            "componentRef": {
+              "name": "comp-model-upload"
+            },
+            "dependentTasks": [
+              "importer"
+            ],
+            "inputs": {
+              "artifacts": {
+                "unmanaged_container_model": {
+                  "taskOutputArtifact": {
+                    "outputArtifactKey": "artifact",
+                    "producerTask": "importer"
+                  }
+                }
+              },
+              "parameters": {
+                "artifact_uri": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "description": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "display_name": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "airbus-ship-dataset-display-classifier-v01"
+                    }
+                  }
+                },
+                "encryption_spec_key_name": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "explanation_metadata": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "{}"
+                    }
+                  }
+                },
+                "explanation_parameters": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "{}"
+                    }
+                  }
+                },
+                "instance_schema_uri": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "labels": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "{}"
+                    }
+                  }
+                },
+                "location": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "asia-east1"
+                    }
+                  }
+                },
+                "parameters_schema_uri": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "prediction_schema_uri": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "project": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "mle-airbus-detection-smu"
+                    }
+                  }
+                },
+                "serving_container_args": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "[]"
+                    }
+                  }
+                },
+                "serving_container_command": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "[]"
+                    }
+                  }
+                },
+                "serving_container_environment_variables": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "[]"
+                    }
+                  }
+                },
+                "serving_container_health_route": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "serving_container_image_uri": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                },
+                "serving_container_ports": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "[]"
+                    }
+                  }
+                },
+                "serving_container_predict_route": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": ""
+                    }
+                  }
+                }
+              }
+            },
+            "taskInfo": {
+              "name": "Model upload"
+            }
+          },
+          "tensorflow-airbus-model-training": {
+            "cachingOptions": {
+              "enableCache": true
+            },
+            "componentRef": {
+              "name": "comp-tensorflow-airbus-model-training"
+            },
+            "dependentTasks": [
+              "import-file-component"
+            ],
+            "inputs": {
+              "parameters": {
+                "eval_data_dir": {
+                  "taskOutputParameter": {
+                    "outputParameterKey": "test_data_fpath",
+                    "producerTask": "import-file-component"
+                  }
+                },
+                "model_dir": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "gs://mle_airbus_dataset/trained_model/"
+                    }
+                  }
+                },
+                "train_data_dir": {
+                  "taskOutputParameter": {
+                    "outputParameterKey": "train_data_fpath",
+                    "producerTask": "import-file-component"
+                  }
+                }
+              }
+            },
+            "taskInfo": {
+              "name": "Model training"
+            }
+          },
+          "test-deployment-component": {
+            "cachingOptions": {
+              "enableCache": true
+            },
+            "componentRef": {
+              "name": "comp-test-deployment-component"
+            },
+            "dependentTasks": [
+              "endpoint-create",
+              "model-deploy"
+            ],
+            "inputs": {
+              "artifacts": {
+                "endpoint": {
+                  "taskOutputArtifact": {
+                    "outputArtifactKey": "endpoint",
+                    "producerTask": "endpoint-create"
+                  }
+                }
+              },
+              "parameters": {
+                "project_dict": {
+                  "componentInputParameter": "project_dict"
+                }
+              }
+            },
+            "taskInfo": {
+              "name": "Test model deployment"
+            }
+          }
+        }
+      },
+      "inputDefinitions": {
+        "parameters": {
+          "gcs_bucket": {
+            "type": "STRING"
+          },
+          "metrics_thresholds": {
+            "type": "STRING"
+          },
+          "model_output_folder": {
+            "type": "STRING"
+          },
+          "project_dict": {
+            "type": "STRING"
+          }
+        }
+      },
+      "outputDefinitions": {
+        "artifacts": {
+          "model-eval-component-metrics": {
+            "artifactType": {
+              "schemaTitle": "system.Metrics",
+              "schemaVersion": "0.0.1"
+            }
+          }
+        }
+      }
+    },
+    "schemaVersion": "2.0.0",
+    "sdkVersion": "kfp-1.8.12"
+  },
+  "runtimeConfig": {
+    "gcsOutputDirectory": "gs://mle_airbus_dataset/airbusmlepipeline/pipeline_root"
+  }
+}

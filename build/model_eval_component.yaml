@@ -1,0 +1,112 @@
+name: Model eval component
+inputs:
+- {name: test_filepath, type: String}
+- {name: model_filepath, type: String}
+outputs:
+- {name: metrics, type: Metrics}
+implementation:
+  container:
+    image: python:3.7
+    command:
+    - sh
+    - -c
+    - |2
+
+      if ! [ -x "$(command -v pip)" ]; then
+          python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip
+      fi
+
+      PIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet     --no-warn-script-location 'tensorflow' 'numpy' 'pandas' 'google-cloud-storage' 'fsspec' 'pyarrow' 'kfp==1.8.12' && "$0" "$@"
+    - sh
+    - -ec
+    - |
+      program_path=$(mktemp -d)
+      printf "%s" "$0" > "$program_path/ephemeral_component.py"
+      python3 -m kfp.v2.components.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+    - "\nimport kfp\nfrom kfp.v2 import dsl\nfrom kfp.v2.dsl import *\nfrom typing\
+      \ import *\n\ndef model_eval_component(\n    test_filepath: str,\n    model_filepath:\
+      \ str,\n    metrics: Output[Metrics]\n):\n    import tensorflow.keras.backend\
+      \ as K\n    import tensorflow as tf\n    import numpy as np\n    import pandas\
+      \ as pd\n    from tensorflow.keras import layers\n    from tensorflow.keras.optimizers\
+      \ import Adam\n    from tensorflow.keras.losses import binary_crossentropy,BinaryCrossentropy\
+      \ \n    from google.cloud import storage\n\n\n    class Augment(tf.keras.layers.Layer):\n\
+      \        def __init__(self,  resize_shape=(768, 768), train=True, seed=42):\n\
+      \            super().__init__()\n        # both use the same seed, so they'll\
+      \ make the same random changes.\n            seed = np.random.randint(1000)\n\
+      \            if train:\n                self.augment_inputs = tf.keras.Sequential(\n\
+      \                                        [\n                               \
+      \             layers.experimental.preprocessing.RandomFlip(seed=seed),\n   \
+      \                                         layers.experimental.preprocessing.RandomRotation(0.1,\
+      \ seed=seed),\n                                            layers.experimental.preprocessing.RandomHeight(0.1,\
+      \ seed=seed),\n                                            layers.experimental.preprocessing.RandomWidth(0.1,\
+      \ seed=seed),\n                                            layers.experimental.preprocessing.RandomZoom(0.9,\
+      \ seed=seed),\n                                            layers.experimental.preprocessing.Rescaling(1.0\
+      \ / 255),\n                                            layers.experimental.preprocessing.Resizing(resize_shape[0],\
+      \ resize_shape[0])\n                                        ]\n            \
+      \                        )\n\n                self.augment_labels = tf.keras.Sequential(\n\
+      \                                        [\n                               \
+      \             layers.experimental.preprocessing.RandomFlip(seed=seed),\n   \
+      \                                         layers.experimental.preprocessing.RandomRotation(0.1,\
+      \ seed=seed),\n                                            layers.experimental.preprocessing.RandomHeight(0.1,\
+      \ seed=seed),\n                                            layers.experimental.preprocessing.RandomWidth(0.1,\
+      \ seed=seed),\n                                            layers.experimental.preprocessing.RandomZoom(0.9,\
+      \ seed=seed),\n                                            layers.experimental.preprocessing.Resizing(resize_shape[0],\
+      \ resize_shape[0])\n                                        ]\n            \
+      \                        )\n            else:\n                self.augment_inputs\
+      \ = tf.keras.Sequential(\n                                        [\n      \
+      \                                      layers.experimental.preprocessing.Rescaling(1.0\
+      \ / 255),\n                                            layers.experimental.preprocessing.Resizing(resize_shape[0],\
+      \ resize_shape[0])\n                                        ]\n            \
+      \                        )\n\n                self.augment_labels = tf.keras.Sequential(\n\
+      \                                        [\n                               \
+      \             layers.experimental.preprocessing.Resizing(resize_shape[0], resize_shape[0])\n\
+      \                                        ]\n                               \
+      \     )       \n\n        def call(self, inputs, labels):\n            inputs\
+      \ = self.augment_inputs(inputs)\n            labels = self.augment_labels(labels)\n\
+      \            return inputs, labels\n\n    def dice_coef(y_true, y_pred, smooth=1):\n\
+      \        intersection = K.sum(y_true * y_pred, axis=[1,2,3])\n        union\
+      \ = K.sum(y_true, axis=[1,2,3]) + K.sum(y_pred, axis=[1,2,3])\n        return\
+      \ K.mean( (2. * intersection + smooth) / (union + smooth), axis=0)\n\n    def\
+      \ dice_p_bce(in_gt, in_pred):\n        return 1e-3*binary_crossentropy(in_gt,\
+      \ in_pred) - dice_coef(in_gt, in_pred)\n\n    def true_positive_rate(y_true,\
+      \ y_pred):\n        return K.sum(K.flatten(y_true)*K.flatten(K.round(y_pred)))/K.sum(y_true)\n\
+      \n    #TODO: How to improve these functions ?\n    def rle_decode_tf(mask_rle,\
+      \ shape=(768, 768)):\n\n        shape = tf.convert_to_tensor(shape, tf.int64)\n\
+      \        size = tf.math.reduce_prod(shape)\n        # Split string\n       \
+      \ s = tf.strings.split(mask_rle)\n        s = tf.strings.to_number(s, tf.int64)\n\
+      \        # Get starts and lengths\n        starts = s[::2] - 1\n        lens\
+      \ = s[1::2]\n        # Make ones to be scattered\n        total_ones = tf.reduce_sum(lens)\n\
+      \        ones = tf.ones([total_ones], tf.uint8)\n        # Make scattering indices\n\
+      \        r = tf.range(total_ones)\n        lens_cum = tf.math.cumsum(lens)\n\
+      \        s = tf.searchsorted(lens_cum, r, 'right')\n        idx = r + tf.gather(starts\
+      \ - tf.pad(lens_cum[:-1], [(1, 0)]), s)\n        # Scatter ones into flattened\
+      \ mask\n        mask_flat = tf.scatter_nd(tf.expand_dims(idx, 1), ones, [size])\n\
+      \        return tf.expand_dims(tf.transpose(tf.reshape(mask_flat, shape)), axis=2)\n\
+      \n    def parse_db_to_img(filename, label):\n        file_path = filename\n\
+      \        img = tf.io.read_file(file_path)\n        image = tf.image.decode_jpeg(img,\
+      \ channels=3)\n        label_img = rle_decode_tf(label)\n\n        return image,\
+      \ label_img\n\n    IMG_SHAPE=(128,128)\n    GCS_BUCKET=\"mle_airbus_dataset\"\
+      \n    BATCH_SIZE = 16\n    EDGE_CROP = 16\n    NB_EPOCHS = 10\n    GAUSSIAN_NOISE\
+      \ = 0.1\n    UPSAMPLE_MODE = 'SIMPLE'\n    # downsampling inside the network\n\
+      \    NET_SCALING = None\n    # downsampling in preprocessing\n    IMG_SCALING\
+      \ = (1, 1)\n    # number of validation images to use\n    VALID_IMG_COUNT =\
+      \ 10\n    # maximum number of steps_per_epoch in training\n    MAX_TRAIN_STEPS\
+      \ = 200\n    AUGMENT_BRIGHTNESS = False\n    N_SAMPLE = 100\n    bucket = storage.Client().bucket(GCS_BUCKET)\n\
+      \n    blob = bucket.blob(\"test.parquet\")\n    blob.download_to_filename(\"\
+      test.parquet\")\n\n    valid_df = pd.read_parquet(f\"test.parquet\")\n    validation\
+      \ = tf.data.Dataset.from_tensor_slices((valid_df['ImageId'].values, valid_df['EncodedPixels'].values))\n\
+      \    validation = validation.shuffle(buffer_size=10)\n    validation = validation.map(lambda\
+      \ x, y: parse_db_to_img(\"gs://mle_airbus_dataset/train_v2/\" + x, y))\n   \
+      \ validation = validation.batch(BATCH_SIZE)\n    validation = validation.map(Augment(resize_shape=IMG_SHAPE,\
+      \ train=False))\n    validation = validation.cache().prefetch(buffer_size=tf.data.AUTOTUNE)\n\
+      \    model_eval = tf.keras.models.load_model(f'gs://{GCS_BUCKET}/trained_model/segm_full_200_20220626-143859/',\
+      \ compile=False)\n    model_eval.compile(optimizer=Adam(1e-4, decay=1e-6), loss=dice_p_bce,\
+      \ metrics=[dice_coef, 'binary_accuracy', true_positive_rate])\n    result =\
+      \ model_eval.evaluate(validation)\n    metrics.log_metric(\"dice_coef\", (result[1]))\n\
+      \    metrics.log_metric(\"binary_accuracy\", (result[2]))\n    metrics.log_metric(\"\
+      true_positive_rate\", (result[3]))\n\n"
+    args:
+    - --executor_input
+    - {executorInput: null}
+    - --function_to_execute
+    - model_eval_component

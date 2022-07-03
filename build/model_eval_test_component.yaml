@@ -1,0 +1,54 @@
+name: Model eval test component
+description: Unit test component that checks if the output metrics passed
+inputs:
+- {name: metrics, type: Metrics}
+implementation:
+  container:
+    image: python:3.7
+    command:
+    - sh
+    - -c
+    - |2
+
+      if ! [ -x "$(command -v pip)" ]; then
+          python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip
+      fi
+
+      PIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet     --no-warn-script-location 'kfp==1.8.12' && "$0" "$@"
+    - sh
+    - -ec
+    - |
+      program_path=$(mktemp -d)
+      printf "%s" "$0" > "$program_path/ephemeral_component.py"
+      python3 -m kfp.v2.components.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+    - |2+
+
+      import kfp
+      from kfp.v2 import dsl
+      from kfp.v2.dsl import *
+      from typing import *
+
+      def model_eval_test_component(
+          metrics: Input[Metrics]
+      ):
+          """
+          Unit test component that checks if the output metrics passed
+          thresholds
+          """
+          import logging
+
+          metrics_thresholds = {
+              'dice_coef': 0.1,
+              'binary_accuracy': 0.8,
+              'true_positive_rate': 0.3
+          }
+
+          for k, v in metrics.metadata.items():
+              assert v >= metrics_thresholds[k]
+              logging.info(f"{k}:{v}, threshold: {metrics_thresholds[k]}. Passed.")
+
+    args:
+    - --executor_input
+    - {executorInput: null}
+    - --function_to_execute
+    - model_eval_test_component
