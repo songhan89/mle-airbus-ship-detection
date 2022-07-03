@@ -3,6 +3,15 @@ import tensorflow as tf
 from skimage.morphology import label
 
 def rle_decode_tf(mask_rle, shape=(768, 768)):
+    """
+    Decode RLE and decompress into a TF tensor array
+    Args:
+        mask_rle: RLE string 
+        shape: output shape for decoded RLE
+        
+    Returns:
+        TF tensor array for image 
+    """
     shape = tf.convert_to_tensor(shape, tf.int64)
     size = tf.math.reduce_prod(shape)
     # Split string

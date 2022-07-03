@@ -1,4 +1,4 @@
-airbus-ship-detection
+CS611 ML Engineering: Airbus Ship Detection with U-Net and Vertex AI Pipeline
 ==============================
 
 [![Vertex AI Version Status](https://img.shields.io/pypi/v/google-cloud-aiplatform.svg)](https://pypi.org/project/google-cloud-aiplatform/)
@@ -28,15 +28,7 @@ Visit this Kaggle page for more info
 * https://www.kaggle.com/c/airbus-ship-detection
 
 ## Pipeline
-Below are the components of our entirepipeline:
-1. EDA / Experimentation
-2. Data Ingest
-3. Model Training
-4. Model Evaluation
-5. Pipeline Deployment
-6. Model Deployment
-7. CI/CD
-8. Model Monitoring
+Below are the components of our entire pipeline:
 
 ### 1. EDA / Experimentation
 We interactively approach the model building and exploration based on the input dataset. Understanding the dataset and problem well before training and building of our model and their respective components.
@@ -59,6 +51,9 @@ Model is deployed to Vertex AI that is used to serve endpoint.
 ### 7. Pipeline Deployment
 Stringing together of the pipeline, alongside test components that ensures every component in the pipeline is in order before pushing it to the Vertex AI platform.
 
+### 8. Model Monitoring
+Using the data statistics generated from Step (3), this notebook is used to aassess new data for train-serve drift.
+
 ### 9. Model Serving
 This notebook provides a demo of calling RESTful api from Endpoint which returns a model prediction result given an input image.
 
@@ -70,9 +65,11 @@ This notebook provides a demo of calling RESTful api from Endpoint which returns
 
     ├── LICENSE
     ├── README.md          <- The top-level README
-    ├── 
-    ├── saved_models       <- Trained and serialized 
-    ├── models
+    ├── build 
+    ├── config             <- config file for GCP resource
+    ├── provision          <- terraform config for GCP resource startup  
+    ├── Dockerfile         <- Docker file for custom model trainer
+    ├── saved_models       <- Trained and serialized model data (for exploratory)
     │
     ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
     │
@@ -82,19 +79,17 @@ This notebook provides a demo of calling RESTful api from Endpoint which returns
     ├── src                <- Source code for use in this project.
     │   ├── __init__.py    <- Makes src a Python module
     │   │
-    │   ├── data           <- Scripts to download or generate data
-    │   │   └── make_dataset.py
+    │   ├── evaluation     <- Scripts to generate model evaluation component
+    │   │   └── eval_component.py
     │   │
-    │   ├── features       <- Scripts to turn raw data into features for modeling
-    │   │   └── build_features.py
     │   │
-    │   ├── models         <- Scripts to train models and then use trained models to make
-    │   │   │                 predictions
-    │   │   ├── predict_model.py
-    │   │   └── train_model.py
-    │   │
-    │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
-    │       └── visualize.py
+    │   ├── model_training  <- Scripts for custom model training
+    │   │   
+    │   │── models  <- Preprocessing scripts  
+    │   │   
+    │   └── utils  <- Common util scripts for data ingest and pre-processing
+    │       └── common.py
+    │       └── dataset.py
     │
     └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
 
