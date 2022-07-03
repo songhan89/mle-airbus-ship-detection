@@ -44,26 +44,26 @@ We interactively approach the model building and exploration based on the input 
 ### 2. Data Ingest
 Due to the complexity of the input dataset and problem itself, preprocessing of the input data is essential to provide good input data for our pipeline.
 
-### 3. Model Training
+### 3. Data Statistics Generation
+In this section, we create a component that computes the data statistics.
+
+### 4. Model Training
 Building of model training component that is used by the overall pipeline to be deployed and part of the CI/CD process that retrains the model based on certain triggers.
 
-### 4. Model Evaluation
+### 5. Model Evaluation
 Component building of evaluation. Evaluation of the output trained model is conducted. Metrics will be output.
-
-### 5. Pipeline Deployment
-Stringing together of the pipeline, alongside test components that ensures every component in the pipeline is in order before pushing it to the Vertex AI platform.
 
 ### 6. Model Deployment
 Model is deployed to Vertex AI that is used to serve endpoint.
 
-### 7. CI/CD
-CI/CD of the 
+### 7. Pipeline Deployment
+Stringing together of the pipeline, alongside test components that ensures every component in the pipeline is in order before pushing it to the Vertex AI platform.
 
-### 8. Model Monitoring
-
+### 9. Model Serving
+This notebook provides a demo of calling RESTful api from Endpoint which returns a model prediction result given an input image.
 
 ### Overall Pipeline (deployed on Vertex AI)
-![Vertex AI Pipeline](https://github.com/songhan89/mle-airbus-ship-detection/tree/main/reports/figures/pipeline.png)
+![Vertex AI Pipeline](./reports/figures/pipeline.jpg)
 
 ## Project Organization
 ------------
